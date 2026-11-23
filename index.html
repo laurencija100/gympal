@@ -108,6 +108,17 @@ details.ex[open] summary{border-bottom:1px solid var(--line)}
 .opt button{padding:7px 12px;font-size:14px;white-space:nowrap}
 .src a,.ex-body a{color:var(--accent)}
 .src li{margin:6px 0;font-size:14px}
+.pics{display:flex;align-items:center;gap:6px;margin:8px 0 2px}
+.pics figure{flex:1;margin:0;background:var(--bg);border:1px solid var(--line);border-radius:10px;overflow:hidden;text-align:center}
+.pics.img figure{background:#fff}
+.pics img,.pics svg{display:block;width:100%;height:auto;max-height:190px;object-fit:contain}
+.pics figcaption{font-size:11px;color:var(--muted);padding:3px 0 5px;background:var(--card2)}
+.pics .arrow{color:var(--muted);font-size:18px;flex:none}
+.pics figure:only-child{flex:0 0 48%;margin:0 auto}
+.credit{font-size:11px;color:var(--muted);margin-bottom:4px}
+.credit a{color:var(--muted)}
+.opt-wrap{border-top:1px solid var(--line);padding:9px 0}
+.opt-wrap .opt{border-top:none;padding:0}
 .legend{display:flex;gap:14px;font-size:12px;color:var(--muted);margin-top:10px}
 .legend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
 
@@ -1454,6 +1465,143 @@ const BULKY_NOTES = {
   calves: ['Calf raises, lots of jumping, stair machine and uphill running', 'Thighs and glutes for proportion'],
 };
 
+/* ---- Exercise pictures ---- */
+// Licensed drawings (CC BY-SA 3.0) — [author, [file, original source], ...]
+const EX_IMG = {
+  'Back Extension (45°)': ['Everkinetic', ['img/back-extension-45-1.png', 'https://wger.de/media/exercise-images/128/Hyperextensions-1.png'], ['img/back-extension-45-2.png', 'https://wger.de/media/exercise-images/128/Hyperextensions-2.png']],
+  'Bench Dip': ['Everkinetic', ['img/bench-dip-1.png', 'https://wger.de/media/exercise-images/83/Bench-dips-1.png'], ['img/bench-dip-2.png', 'https://wger.de/media/exercise-images/83/Bench-dips-2.png']],
+  'Cable Curl': ['Everkinetic', ['img/cable-curl-1.png', 'https://wger.de/media/exercise-images/129/Standing-biceps-curl-1.png'], ['img/cable-curl-2.png', 'https://wger.de/media/exercise-images/129/Standing-biceps-curl-2.png']],
+  'Cable Fly': ['Everkinetic', ['img/cable-fly-1.png', 'https://wger.de/media/exercise-images/122/Incline-cable-flyes-1.png'], ['img/cable-fly-2.png', 'https://wger.de/media/exercise-images/122/Incline-cable-flyes-2.png']],
+  'Dumbbell Bench Press': ['Everkinetic', ['img/dumbbell-bench-press-1.png', 'https://wger.de/media/exercise-images/97/Dumbbell-bench-press-1.png'], ['img/dumbbell-bench-press-2.png', 'https://wger.de/media/exercise-images/97/Dumbbell-bench-press-2.png']],
+  'Dumbbell Curl': ['Everkinetic', ['img/dumbbell-curl-1.png', 'https://wger.de/media/exercise-images/81/Biceps-curl-1.png'], ['img/dumbbell-curl-2.png', 'https://wger.de/media/exercise-images/81/Biceps-curl-2.png']],
+  'Dumbbell Shoulder Press': ['Everkinetic', ['img/dumbbell-shoulder-press-1.png', 'https://wger.de/media/exercise-images/123/dumbbell-shoulder-press-large-1.png'], ['img/dumbbell-shoulder-press-2.png', 'https://wger.de/media/exercise-images/123/dumbbell-shoulder-press-large-2.png']],
+  'Hammer Curl': ['Everkinetic', ['img/hammer-curl-1.png', 'https://wger.de/media/exercise-images/86/Bicep-hammer-curl-1.png'], ['img/hammer-curl-2.png', 'https://wger.de/media/exercise-images/86/Bicep-hammer-curl-2.png']],
+  'Incline Dumbbell Press': ['Everkinetic', ['img/incline-dumbbell-press-1.png', 'https://wger.de/media/exercise-images/16/Incline-press-1.png'], ['img/incline-dumbbell-press-2.png', 'https://wger.de/media/exercise-images/16/Incline-press-2.png']],
+  'Lateral Raise': ['Everkinetic', ['img/lateral-raise-1.png', 'https://wger.de/media/exercise-images/148/lateral-dumbbell-raises-large-1.png'], ['img/lateral-raise-2.png', 'https://wger.de/media/exercise-images/148/lateral-dumbbell-raises-large-2.png']],
+  'Lying Leg Curl': ['Everkinetic', ['img/lying-leg-curl-1.png', 'https://wger.de/media/exercise-images/154/lying-leg-curl-machine-large-1.png'], ['img/lying-leg-curl-2.png', 'https://wger.de/media/exercise-images/154/lying-leg-curl-machine-large-2.png']],
+  'Pec Deck': ['Everkinetic', ['img/pec-deck-1.png', 'https://wger.de/media/exercise-images/98/Butterfly-machine-1.png'], ['img/pec-deck-2.png', 'https://wger.de/media/exercise-images/98/Butterfly-machine-2.png']],
+  'Preacher Curl': ['Everkinetic', ['img/preacher-curl-1.png', 'https://wger.de/media/exercise-images/193/Preacher-curl-3-1.png'], ['img/preacher-curl-2.png', 'https://wger.de/media/exercise-images/193/Preacher-curl-3-2.png']],
+  'Seated Leg Curl': ['Everkinetic', ['img/seated-leg-curl-1.png', 'https://wger.de/media/exercise-images/117/seated-leg-curl-large-1.png'], ['img/seated-leg-curl-2.png', 'https://wger.de/media/exercise-images/117/seated-leg-curl-large-2.png']],
+  'Shoulder Press Machine': ['wger.de', ['img/shoulder-press-machine-1.png', 'https://wger.de/media/exercise-images/53/Shoulder-press-machine-1.png'], ['img/shoulder-press-machine-2.png', 'https://wger.de/media/exercise-images/53/Shoulder-press-machine-2.png']],
+  'Assisted Pull-Up': ['Everkinetic', ['img/assisted-pull-up-1.png', 'https://wger.de/media/exercise-images/152/6c1a7459-266d-491a-bd50-7cbaea2bc771.png'], ['img/assisted-pull-up-2.png', 'https://wger.de/media/exercise-images/152/b2c5a9f9-8beb-41f7-841c-9664d22a427e.png']],
+  'Seated Cable Row': ['Everkinetic', ['img/seated-cable-row-1.png', 'https://wger.de/media/exercise-images/143/Cable-seated-rows-1.png'], ['img/seated-cable-row-2.png', 'https://wger.de/media/exercise-images/143/Cable-seated-rows-2.png']],
+};
+const FIG_NOTE = {'Pallof Press': 'The cable is beside you at chest height; press straight out and resist the twist.', 'Prone T-Raise': 'Seen from behind, lying chest-down on an incline bench.', 'Rear Delt Fly Machine': 'Seen from behind, facing the machine pad.', 'Wall Slide': 'Seen from the front, with your back against a wall.', 'Hip Abduction Machine': 'Seen from the front.', 'Hip Adduction Machine': 'Seen from the front.', 'Cable Hip Abduction': 'Seen from the front.', 'Cable Hip Adduction': 'Seen from the front.', 'Cable Lateral Raise': 'Seen from the front.', 'Chin Tuck': 'Glide the head straight back, keeping your eyes level.'};
+const IMG_ALIAS = {'Bicep Curl Machine': 'Preacher Curl'}; // closest licensed drawing
+const IMG_NOTE = {'Bicep Curl Machine': 'Shown with a preacher bench; the machine works the same way.', 'Assisted Pull-Up': 'Shown unassisted; the machine adds a knee pad that helps lift you.', 'Seated Cable Row': ''};
+
+// GymPal's own diagrams: a figure posed by joint angles (degrees: 0 = right, 90 = down).
+// Pose keys: x,y hip · t torso · ua/fa upper/fore arm · th/sh thigh/shin · ft foot · "2" = far limb
+// front:1 = seen from the front · al/thl/tl = arm/thigh/torso length scale · hx/hn = head shift/tilt
+const SEG = {t: 34, n: 10, ua: 17, fa: 16, th: 22, sh: 21, ft: 7};
+const mv = (p, a, l) => [p[0] + Math.cos(a * Math.PI / 180) * l, p[1] + Math.sin(a * Math.PI / 180) * l];
+function joints(o) {
+  const v = (k, d) => o[k] ?? d, al = v('al', 1), thl = v('thl', 1);
+  const hp = [o.x, o.y], s = mv(hp, o.t, SEG.t * v('tl', 1));
+  const h = mv([s[0] + v('hx', 0), s[1]], o.t + v('hn', 0), SEG.n);
+  const dx = o.front ? 6 : 0, sx = o.front ? 10 : 0;
+  const hpN = [hp[0] + dx, hp[1]], hpF = [hp[0] - dx, hp[1]], sN = [s[0] + sx, s[1]], sF = [s[0] - sx, s[1]];
+  const e = mv(sN, o.ua, SEG.ua * al), w = mv(e, o.fa, SEG.fa * al);
+  const e2 = mv(sF, v('ua2', o.ua), SEG.ua * al), w2 = mv(e2, v('fa2', o.fa), SEG.fa * al);
+  const k = mv(hpN, o.th, SEG.th * thl), a = mv(k, o.sh, SEG.sh), t = mv(a, v('ft', 0), SEG.ft);
+  const k2 = mv(hpF, v('th2', o.th), SEG.th * thl), a2 = mv(k2, v('sh2', o.sh), SEG.sh), t2 = mv(a2, v('ft2', v('ft', 0)), SEG.ft);
+  return {hp, s, h, hpN, hpF, sN, sF, e, w, e2, w2, k, a, t, k2, a2, t2};
+}
+const f1 = n => (Math.round(n * 10) / 10);
+const pl = (pts, w, c) => `<polyline points="${pts.map(p => f1(p[0]) + ',' + f1(p[1])).join(' ')}" stroke="${c}" stroke-width="${w}" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+function poseSVG(o, props) {
+  const J = joints(o), near = '#a7b0c4', far = o.front ? near : '#687188';
+  const EQ = '#3a4150', EQL = '#525b6e', MET = '#c9ced8';
+  let back = '', front = '';
+  for (const p of props) {
+    const [kind, ...r] = p, jp = n => J[n];
+    if (kind === 'floor') back += `<line x1="0" y1="95.5" x2="120" y2="95.5" stroke="${EQL}" stroke-width="1.5"/>`;
+    else if (kind === 'rect') back += `<rect x="${r[0]}" y="${r[1]}" width="${r[2]}" height="${r[3]}" rx="1.5" fill="${EQ}"/>`;
+    else if (kind === 'line') back += `<line x1="${r[0]}" y1="${r[1]}" x2="${r[2]}" y2="${r[3]}" stroke="${EQL}" stroke-width="3" stroke-linecap="round"/>`;
+    else if (kind === 'cable') { const q = jp(r[2]); back += `<line x1="${r[0]}" y1="${r[1]}" x2="${f1(q[0])}" y2="${f1(q[1])}" stroke="${MET}" stroke-width=".8"/><circle cx="${r[0]}" cy="${r[1]}" r="2.2" fill="${EQL}"/>`; }
+    else if (kind === 'cabletop') { const q = jp(r[0]); back += `<line x1="${f1(q[0])}" y1="-20" x2="${f1(q[0])}" y2="${f1(q[1])}" stroke="${MET}" stroke-width=".8"/>`; }
+    else if (kind === 'db') { const q = jp(r[0]); front += `<rect x="${f1(q[0] - 6)}" y="${f1(q[1] - 1.5)}" width="12" height="3" fill="${MET}"/><rect x="${f1(q[0] - 7)}" y="${f1(q[1] - 3.5)}" width="3" height="7" rx="1" fill="#7d8698"/><rect x="${f1(q[0] + 4)}" y="${f1(q[1] - 3.5)}" width="3" height="7" rx="1" fill="#7d8698"/>`; }
+    else if (kind === 'plate') { const q = jp(r[0]); front += `<circle cx="${f1(q[0])}" cy="${f1(q[1])}" r="7" fill="#7d8698" stroke="${MET}" stroke-width="1.2"/>`; }
+    else if (kind === 'handle') { const q = jp(r[0]); front += `<circle cx="${f1(q[0])}" cy="${f1(q[1])}" r="2.4" fill="${MET}"/>`; }
+    else if (kind === 'pad') { const q = jp(r[0]), [pw, ph, ox = 0, oy = 0] = r.slice(1); front += `<rect x="${f1(q[0] - pw / 2 + ox)}" y="${f1(q[1] - ph / 2 + oy)}" width="${pw}" height="${ph}" rx="2" fill="#4b5467"/>`; }
+  }
+  const body = pl([J.hpF, J.k2, J.a2, J.t2], 7, far) + pl([J.sF, J.e2, J.w2], 5.5, far)
+    + pl([J.hp, J.s], o.front ? 19 : 12, near)
+    + pl([J.hpN, J.k, J.a, J.t], 7.5, near) + pl([J.sN, J.e, J.w], 6, near)
+    + `<circle cx="${f1(J.h[0])}" cy="${f1(J.h[1])}" r="6.5" fill="${near}"/>`;
+  return `<svg class="pose" viewBox="0 0 120 118" role="img"><g transform="translate(0,20)">${back}${body}${front}</g></svg>`;
+}
+// [start pose, end pose (or null for a hold), props]
+const STAND = {x: 58, y: 52, t: -90, ua: 90, fa: 90, th: 90, sh: 90};
+const FIG = {
+  'Goblet Squat': [{...STAND, ua: 75, fa: -105}, {x: 44, y: 74, t: -62, ua: 75, fa: -105, th: 5, sh: 105}, [['floor'], ['db', 'w']]],
+  'Sumo Squat': [{...STAND}, {x: 44, y: 74, t: -62, ua: 85, fa: 92, th: 5, sh: 105}, [['floor'], ['db', 'w']]],
+  'Smith Machine Squat': [{...STAND, ua: 115, fa: -70}, {x: 44, y: 74, t: -62, ua: 125, fa: -60, th: 5, sh: 105}, [['floor'], ['line', 59, -20, 59, 95], ['plate', 's']]],
+  'Bulgarian Split Squat': [{x: 50, y: 52, t: -85, ua: 92, fa: 90, th: 80, sh: 95, th2: 120, sh2: 170, ft2: 180}, {x: 45, y: 68, t: -75, ua: 92, fa: 90, th: 20, sh: 95, th2: 95, sh2: -135, ft2: 180}, [['floor'], ['rect', 3, 74, 30, 4], ['line', 8, 78, 8, 95], ['line', 28, 78, 28, 95], ['db', 'w']]],
+  'Reverse Lunge': [{...STAND}, {x: 52, y: 70, t: -88, ua: 90, fa: 90, th: 15, sh: 95, th2: 100, sh2: 175, ft2: 160}, [['floor'], ['db', 'w']]],
+  'Step-Up': [{x: 52, y: 50, t: -85, ua: 90, fa: 90, th: 30, sh: 100, th2: 100, sh2: 92}, {x: 70, y: 39, t: -90, ua: 90, fa: 90, th: 90, sh: 90, th2: 105, sh2: 75}, [['floor'], ['rect', 62, 82, 26, 13], ['db', 'w']]],
+  'Romanian Deadlift': [{...STAND}, {x: 46, y: 54, t: -15, ua: 90, fa: 90, th: 78, sh: 96}, [['floor'], ['db', 'w']]],
+  'Cable Pull-Through': [{...STAND, ua: 95, fa: 95}, {x: 58, y: 54, t: -20, ua: 115, fa: 115, th: 78, sh: 96}, [['floor'], ['line', 4, 60, 4, 95], ['cable', 6, 93, 'w'], ['handle', 'w']]],
+  'Hip Thrust Machine': [{x: 52, y: 90, t: -130, ua: 60, fa: 10, th: -45, sh: 90}, {x: 63, y: 66, t: -177, ua: 5, fa: -5, th: 15, sh: 90}, [['floor'], ['rect', 2, 60, 28, 6], ['line', 8, 66, 8, 95], ['line', 24, 66, 24, 95], ['pad', 'hp', 18, 6, 0, -6]]],
+  'Barbell Hip Thrust': [{x: 52, y: 90, t: -130, ua: 60, fa: 10, th: -45, sh: 90}, {x: 63, y: 66, t: -177, ua: 5, fa: -5, th: 15, sh: 90}, [['floor'], ['rect', 2, 60, 28, 6], ['line', 8, 66, 8, 95], ['line', 24, 66, 24, 95], ['plate', 'hp']]],
+  'Glute Bridge': [{x: 55, y: 88, t: 178, ua: 2, fa: 0, th: -45, sh: 92}, {x: 55, y: 74, t: 152, ua: 0, fa: 0, th: 0, sh: 95}, [['floor']]],
+  'Single-Leg Glute Bridge': [{x: 55, y: 88, t: 178, ua: 2, fa: 0, th: -45, sh: 92, th2: -65, sh2: -15}, {x: 55, y: 74, t: 152, ua: 0, fa: 0, th: 0, sh: 95, th2: -20, sh2: -20}, [['floor']]],
+  'Dead Bug': [{x: 70, y: 86, t: 180, ua: -90, fa: -90, th: -90, sh: 0, ft: -90}, {x: 70, y: 86, t: 180, ua: -90, fa: -90, ua2: -160, fa2: -160, th: -8, sh: -8, ft: -80, th2: -90, sh2: 0, ft2: -90}, [['floor']]],
+  'Bird Dog': [{x: 48, y: 70, t: -13, ua: 90, fa: 90, th: 90, sh: 180, ft: 180}, {x: 48, y: 70, t: -13, ua: -8, fa: -8, ua2: 90, fa2: 90, th: 90, sh: 180, ft: 180, th2: 178, sh2: 178, ft2: 178}, [['floor']]],
+  'Plank': [{x: 50, y: 81, t: -12, ua: 90, fa: 0, th: 160, sh: 160, ft: 100}, null, [['floor']]],
+  'Side Plank': [{x: 45, y: 84, t: -20, ua: 90, fa: 0, ua2: 160, fa2: 160, th: 168, sh: 168, ft: 168}, null, [['floor']]],
+  'Side Plank Hip Abduction': [{x: 45, y: 84, t: -20, ua: 90, fa: 0, ua2: 160, fa2: 160, th: 168, sh: 168, ft: 168}, {x: 45, y: 84, t: -20, ua: 90, fa: 0, ua2: 160, fa2: 160, th: 145, sh: 145, ft: 145, th2: 168, sh2: 168, ft2: 168}, [['floor']]],
+  'Copenhagen Plank': [{x: 45, y: 86, t: -18, ua: 90, fa: 0, ua2: 162, fa2: 162, th: 186, sh: 186, ft: 186, th2: 165, sh2: 165, ft2: 165}, null, [['floor'], ['rect', 0, 84, 18, 11]]],
+  'Hanging Leg Raise': [{x: 52, y: 47, t: -90, ua: 90, fa: 0, th: 90, sh: 90, ft: 20}, {x: 52, y: 47, t: -90, ua: 90, fa: 0, th: -15, sh: 90, ft: 20}, [['rect', 40, 8, 7, 60], ['rect', 56, 31, 26, 4]]],
+  'Nordic Hamstring Curl': [{x: 50, y: 70, t: -90, ua: 90, fa: 90, th: 90, sh: 180, ft: 180}, {x: 65.6, y: 76.4, t: -45, ua: 75, fa: 80, th: 135, sh: 180, ft: 180}, [['floor'], ['rect', 40, 92, 22, 3], ['rect', 18, 84, 8, 5]]],
+  'Hip Abduction Machine': [{front: 1, x: 60, y: 60, t: -90, tl: .8, ua: 95, fa: 92, ua2: 85, fa2: 88, th: 80, sh: 90, th2: 100, sh2: 90, thl: .5, ft2: 180}, {front: 1, x: 60, y: 60, t: -90, tl: .8, ua: 95, fa: 92, ua2: 85, fa2: 88, th: 25, sh: 90, th2: 155, sh2: 90, thl: .5, ft2: 180}, [['rect', 36, 60, 48, 6], ['pad', 'k', 4, 11, 4, 2], ['pad', 'k2', 4, 11, -4, 2]]],
+  'Hip Adduction Machine': [{front: 1, x: 60, y: 60, t: -90, tl: .8, ua: 95, fa: 92, ua2: 85, fa2: 88, th: 25, sh: 90, th2: 155, sh2: 90, thl: .5, ft2: 180}, {front: 1, x: 60, y: 60, t: -90, tl: .8, ua: 95, fa: 92, ua2: 85, fa2: 88, th: 80, sh: 90, th2: 100, sh2: 90, thl: .5, ft2: 180}, [['rect', 36, 60, 48, 6], ['pad', 'k', 4, 11, -4, 2], ['pad', 'k2', 4, 11, 4, 2]]],
+  'Cable Hip Abduction': [{front: 1, x: 60, y: 52, t: -90, ua: 100, fa: 95, ua2: 80, fa2: 85, th: 93, sh: 93, th2: 88, sh2: 88, ft2: 180}, {front: 1, x: 60, y: 52, t: -90, ua: 100, fa: 95, ua2: 80, fa2: 85, th: 60, sh: 60, th2: 88, sh2: 88, ft2: 180}, [['floor'], ['line', 3, 50, 3, 95], ['cable', 4, 93, 'a']]],
+  'Cable Hip Adduction': [{front: 1, x: 60, y: 52, t: -90, ua: 100, fa: 95, ua2: 80, fa2: 85, th: 60, sh: 60, th2: 88, sh2: 88, ft2: 180}, {front: 1, x: 60, y: 52, t: -90, ua: 100, fa: 95, ua2: 80, fa2: 85, th: 98, sh: 98, th2: 88, sh2: 88, ft2: 180}, [['floor'], ['line', 117, 50, 117, 95], ['cable', 116, 93, 'a']]],
+  'Cable Glute Kickback': [{x: 58, y: 53, t: -75, ua: 0, fa: 10, th: 92, sh: 92, th2: 90, sh2: 90}, {x: 58, y: 53, t: -75, ua: 0, fa: 10, th: 135, sh: 125, th2: 90, sh2: 90}, [['floor'], ['line', 104, -15, 104, 95], ['cable', 104, 92, 'a']]],
+  'Glute Kickback Machine': [{x: 58, y: 53, t: -70, ua: 0, fa: 10, th: 95, sh: 95, th2: 90, sh2: 90}, {x: 58, y: 53, t: -70, ua: 0, fa: 10, th: 140, sh: 115, th2: 90, sh2: 90}, [['floor'], ['rect', 100, -10, 8, 105], ['pad', 'a', 8, 8]]],
+  'Lat Pulldown': [{x: 50, y: 70, t: -95, ua: -82, fa: -82, th: -3, sh: 90}, {x: 50, y: 70, t: -100, ua: 100, fa: -100, th: -3, sh: 90}, [['rect', 30, 72, 34, 5], ['rect', 66, 59, 14, 5], ['cabletop', 'w'], ['handle', 'w']]],
+  'Straight-Arm Pulldown': [{x: 52, y: 52, t: -78, ua: -40, fa: -40, th: 92, sh: 88}, {x: 52, y: 52, t: -78, ua: 75, fa: 75, th: 92, sh: 88}, [['floor'], ['line', 108, -20, 108, 95], ['cable', 108, -10, 'w'], ['handle', 'w']]],
+  'Face Pull': [{x: 52, y: 52, t: -90, ua: -5, fa: -5, th: 92, sh: 88}, {x: 52, y: 52, t: -90, ua: 180, fa: -55, th: 92, sh: 88}, [['floor'], ['line', 112, -20, 112, 95], ['cable', 112, 16, 'w'], ['handle', 'w']]],
+  'Tricep Pushdown': [{x: 56, y: 52, t: -85, ua: 95, fa: -35, th: 92, sh: 88}, {x: 56, y: 52, t: -85, ua: 95, fa: 85, th: 92, sh: 88}, [['floor'], ['line', 100, -20, 100, 95], ['cable', 100, -12, 'w'], ['handle', 'w']]],
+  'Overhead Cable Triceps Extension': [{x: 58, y: 52, t: -80, ua: -55, fa: 150, th: 80, sh: 95, th2: 105, sh2: 90}, {x: 58, y: 52, t: -80, ua: -55, fa: -55, th: 80, sh: 95, th2: 105, sh2: 90}, [['floor'], ['line', 8, -20, 8, 95], ['cable', 8, 30, 'w'], ['handle', 'w']]],
+  'Overhead Tricep Extension': [{...STAND, t: -88, ua: -80, fa: 115}, {...STAND, t: -88, ua: -80, fa: -85}, [['floor'], ['db', 'w']]],
+  'Incline Dumbbell Curl': [{x: 60, y: 70, t: -125, ua: 97, fa: 97, th: -3, sh: 90}, {x: 60, y: 70, t: -125, ua: 97, fa: -60, th: -3, sh: 90}, [['floor'], ['line', 31, 30, 58, 72], ['rect', 50, 72, 26, 5], ['db', 'w']]],
+  'Chest Press Machine': [{x: 50, y: 70, t: -97, ua: 135, fa: -10, th: -3, sh: 90}, {x: 50, y: 70, t: -97, ua: 5, fa: 0, th: -3, sh: 90}, [['line', 39, 28, 43, 74], ['rect', 38, 72, 32, 5], ['line', 104, -20, 104, 95], ['handle', 'w']]],
+  'Incline Chest Press Machine': [{x: 52, y: 72, t: -118, ua: 140, fa: -30, th: -3, sh: 90}, {x: 52, y: 72, t: -118, ua: -25, fa: -25, th: -3, sh: 90}, [['line', 24, 30, 48, 76], ['rect', 40, 74, 32, 5], ['handle', 'w']]],
+  'Push-Up': [{x: 47, y: 72, t: -17, ua: 90, fa: 90, th: 155, sh: 155, ft: 100}, {x: 44.5, y: 88, t: -10, ua: 135, fa: 0, th: 168, sh: 168, ft: 100}, [['floor']]],
+  'Assisted Dip': [{x: 55, y: 56, t: -90, ua: 85, fa: 90, th: 90, sh: 175}, {x: 55, y: 66, t: -84, ua: 140, fa: 40, th: 90, sh: 175}, [['line', 44, 55, 76, 55], ['line', 76, 55, 76, 95], ['floor'], ['handle', 'w'], ['pad', 'k', 20, 4, -8, 4]]],
+  'Prone Y-Raise': [{x: 40, y: 78, t: -30, ua: 90, fa: 90, th: 155, sh: 155, ft: 90}, {x: 40, y: 78, t: -30, ua: -40, fa: -40, th: 155, sh: 155, ft: 90}, [['floor'], ['line', 22, 95, 86, 57], ['db', 'w']]],
+  'Cable Y-Raise': [{x: 55, y: 52, t: -88, ua: 80, fa: 80, th: 92, sh: 88}, {x: 55, y: 52, t: -88, ua: -55, fa: -55, th: 92, sh: 88}, [['floor'], ['line', 112, -20, 112, 95], ['cable', 112, 90, 'w'], ['handle', 'w']]],
+  'Prone T-Raise': [{front: 1, x: 60, y: 62, t: -90, tl: .85, al: .45, ua: 85, fa: 85, ua2: 95, fa2: 95, th: 85, sh: 90, th2: 95, sh2: 90}, {front: 1, x: 60, y: 62, t: -90, tl: .85, ua: 5, fa: 5, ua2: 175, fa2: 175, th: 85, sh: 90, th2: 95, sh2: 90}, [['floor'], ['rect', 49, 8, 22, 52], ['db', 'w'], ['db', 'w2']]],
+  'Rear Delt Fly Machine': [{front: 1, x: 60, y: 62, t: -90, tl: .85, al: .45, ua: 85, fa: 85, ua2: 95, fa2: 95, th: 85, sh: 90, th2: 95, sh2: 90, thl: .6}, {front: 1, x: 60, y: 62, t: -90, tl: .85, ua: 5, fa: 5, ua2: 175, fa2: 175, th: 85, sh: 90, th2: 95, sh2: 90, thl: .6}, [['rect', 38, 62, 44, 6], ['handle', 'w'], ['handle', 'w2']]],
+  'Side-Lying External Rotation': [{x: 48, y: 80, t: -2, ua: 178, fa: 85, ua2: -10, fa2: -170, th: 170, sh: 190, ft: 180}, {x: 48, y: 80, t: -2, ua: 178, fa: -85, ua2: -10, fa2: -170, th: 170, sh: 190, ft: 180}, [['floor'], ['db', 'w']]],
+  'Wall Slide': [{front: 1, x: 60, y: 52, t: -90, ua: 30, fa: -90, ua2: 150, fa2: -90, th: 92, sh: 90, th2: 88, sh2: 90, ft2: 180}, {front: 1, x: 60, y: 52, t: -90, ua: -62, fa: -72, ua2: -118, fa2: -108, th: 92, sh: 90, th2: 88, sh2: 90, ft2: 180}, [['floor']]],
+  'Chin Tuck': [{...STAND, hx: 8, hn: 18}, {...STAND, hx: -2}, [['floor']]],
+  'Pallof Press': [{x: 56, y: 52, t: -90, ua: 100, fa: -95, th: 92, sh: 88}, {x: 56, y: 52, t: -90, ua: 0, fa: 0, th: 92, sh: 88}, [['floor'], ['line', 34, -20, 34, 95], ['cable', 34, 33, 'w'], ['handle', 'w']]],
+  'Cable Lateral Raise': [{front: 1, x: 60, y: 52, t: -90, ua: 100, fa: 100, ua2: 85, fa2: 85, th: 92, sh: 90, th2: 88, sh2: 90, ft2: 180}, {front: 1, x: 60, y: 52, t: -90, ua: -5, fa: -5, ua2: 85, fa2: 85, th: 92, sh: 90, th2: 88, sh2: 90, ft2: 180}, [['floor'], ['line', 4, 50, 4, 95], ['cable', 6, 92, 'w'], ['handle', 'w']]],
+  'Seated Calf Raise': [{x: 42, y: 60, t: -92, ua: 55, fa: 10, th: 0, sh: 90, ft: -25}, {x: 42, y: 60, t: -92, ua: 55, fa: 10, th: -8, sh: 92, ft: 40}, [['floor'], ['rect', 18, 62, 32, 5], ['rect', 60, 84, 20, 11], ['pad', 'k', 14, 5, 0, -5]]],
+  'Standing Calf Raise': [{x: 58, y: 43, t: -90, ua: 90, fa: 90, th: 90, sh: 90, ft: -20}, {x: 58, y: 34, t: -90, ua: 90, fa: 90, th: 90, sh: 90, ft: 45}, [['floor'], ['rect', 58, 84, 22, 11], ['db', 'w']]],
+  'Single-Leg Calf Raise': [{x: 58, y: 43, t: -90, ua: 90, fa: 90, th: 90, sh: 90, ft: -20, th2: 100, sh2: 150}, {x: 58, y: 34, t: -90, ua: 90, fa: 90, th: 90, sh: 90, ft: 45, th2: 100, sh2: 150}, [['floor'], ['rect', 58, 84, 22, 11], ['db', 'w']]],
+  'Tibialis Raise': [{x: 40, y: 50, t: -96, ua: 95, fa: 90, th: 78, sh: 78, ft: 0}, {x: 40, y: 50, t: -96, ua: 95, fa: 90, th: 78, sh: 78, ft: -35}, [['floor'], ['line', 30, -20, 30, 95]]],
+  'Ab Crunch Machine': [{x: 44, y: 70, t: -95, ua: 50, fa: -110, th: -3, sh: 90}, {x: 44, y: 70, t: -50, hn: 25, ua: 50, fa: -110, th: -3, sh: 90}, [['rect', 28, 72, 30, 5], ['line', 29, 30, 33, 74], ['handle', 'w']]],
+  'Cable Crunch': [{x: 52, y: 70, t: -80, ua: 55, fa: -120, th: 90, sh: 180, ft: 180}, {x: 50, y: 70, t: -22, hn: 40, ua: 95, fa: -60, th: 90, sh: 180, ft: 180}, [['floor'], ['line', 100, -20, 100, 95], ['cable', 100, -14, 'w'], ['handle', 'w']]],
+  'One-Arm Dumbbell Row': [{x: 42, y: 60, t: -19, ua: 90, fa: 90, ua2: 90, fa2: 90, th: 125, sh: 110, th2: 90, sh2: 180, ft2: 180}, {x: 42, y: 60, t: -19, ua: -150, fa: 95, ua2: 90, fa2: 90, th: 125, sh: 110, th2: 90, sh2: 180, ft2: 180}, [['floor'], ['rect', 15, 84, 70, 4], ['line', 20, 88, 20, 95], ['line', 80, 88, 80, 95], ['db', 'w']]],
+};
+function exPicture(name) {
+  const iname = IMG_ALIAS[name] || name, im = EX_IMG[iname];
+  if (im) {
+    const [author, ...files] = im;
+    return `<div class="pics img">${files.map((f, i) => `<figure><img src="${esc(f[0])}" alt="${esc(name)} ${i ? 'end' : 'start'} position" loading="lazy"><figcaption>${i ? 'End' : 'Start'}</figcaption></figure>`).join('')}</div>
+      <div class="credit">${IMG_NOTE[name] ? esc(IMG_NOTE[name]) + ' ' : ''}Drawing: ${esc(author)}, <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 3.0</a>, via wger.de</div>`;
+  }
+  const f = FIG[name];
+  if (!f) return '';
+  const [a, b, props] = f;
+  return `<div class="pics">${b ? `<figure>${poseSVG(a, props)}<figcaption>Start</figcaption></figure><span class="arrow">→</span><figure>${poseSVG(b, props)}<figcaption>End</figcaption></figure>`
+    : `<figure>${poseSVG(a, props)}<figcaption>Hold</figcaption></figure>`}</div>${FIG_NOTE[name] ? `<div class="credit">${esc(FIG_NOTE[name])}</div>` : ''}`;
+}
+
 const AREAS_MAP = {
   front: [
     ['shoulders', 'Shoulders', [[139, 94, 13, 11], [221, 94, 13, 11]], ['sh_narrow', 'sh_rounded', 'sh_sloped', 'sh_stiff']],
@@ -1517,7 +1665,7 @@ function viewIssue(iss) {
       <div class="ex-body">
         <p><b>How:</b> ${esc(e.how)}</p>
         <p><b>For this goal:</b> ${esc(e.dose)}</p>
-        ${e.opts.map(n => { const x = findEx(n); return `<div class="opt"><span>${esc(n)} ${x ? `<span class="tag t-${esc(x.eq)}">${esc(EQ[x.eq])}</span>` : ''}</span><button data-act="coachAdd" data-n="${esc(n)}">+ Add</button></div>`; }).join('')}
+        ${e.opts.map(n => { const x = findEx(n); return `<div class="opt-wrap"><div class="opt"><span>${esc(n)} ${x ? `<span class="tag t-${esc(x.eq)}">${esc(EQ[x.eq])}</span>` : ''}</span><button data-act="coachAdd" data-n="${esc(n)}">+ Add</button></div>${exPicture(n)}</div>`; }).join('')}
         <p><a href="${esc(watchUrl(e.opts[0]))}" target="_blank" rel="noopener noreferrer">▶ Watch how (opens video search)</a></p>
       </div>
     </details>`).join('');
@@ -1573,6 +1721,11 @@ function viewSettings() {
   <div class="card note">Open this page in <b>Safari</b> → tap <b>Share</b> → <b>Add to Home Screen</b>. It will then open full-screen like a normal app and work offline at the gym.</div>
   <h2>Units</h2>
   <div class="card note">Weights in kg, distance in km (swimming and rowing in metres).</div>
+  <h2>Picture credits</h2>
+  <details class="card note"><summary style="cursor:pointer">Exercise drawings</summary>
+    <p>Most exercise diagrams are drawn by GymPal. These drawings are by <b>Everkinetic</b> (one by wger.de), licensed <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener noreferrer" style="color:var(--accent)">CC BY-SA 3.0</a>, from the open wger.de exercise database. They have been resized.</p>
+    <ul class="src">${Object.entries(EX_IMG).map(([n, [author, ...files]]) => `<li>${esc(n)}: ${esc(author)} · ${files.map((f, i) => `<a href="${esc(f[1])}" target="_blank" rel="noopener noreferrer">original ${i + 1}</a>`).join(', ')}</li>`).join('')}</ul>
+  </details>
   <h2>Danger zone</h2>
   <button class="btn-danger" data-act="wipe">Delete all workouts</button>
   <p class="note" style="text-align:center;margin-top:24px">GymPal · batch 1</p>`;
