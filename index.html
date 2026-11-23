@@ -82,6 +82,32 @@ label.f>input,label.f>select,label.f>textarea{margin-top:4px}
 .mtable th:first-child,.mtable td:first-child{text-align:left}
 .mtable td{text-align:right;padding:9px 0;border-top:1px solid var(--line)}
 .mtable td.d{color:var(--muted)}
+/* coach */
+.seg{display:flex;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:3px;margin:12px 0}
+.seg button{flex:1;border:none;background:none;padding:9px;border-radius:9px;color:var(--muted);font-weight:600}
+.seg button.on{background:var(--accent);color:var(--accent-ink)}
+.coach-fig{display:block;margin:0 auto;width:100%;max-width:240px;height:auto}
+.hot{cursor:pointer}
+.hot ellipse{fill:var(--accent);fill-opacity:.28;stroke:var(--accent);stroke-opacity:.9;stroke-width:1.5}
+.hot.soon ellipse{fill:#9aa1ac;fill-opacity:.14;stroke:#9aa1ac;stroke-opacity:.45}
+.issue{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;margin:8px 0;padding:14px;background:var(--card);border-radius:var(--r)}
+.issue.soon{opacity:.5}
+.issue small{color:var(--muted)}
+.chip.weak{background:rgba(255,93,93,.16);color:#ff9a9a;border-color:transparent}
+.chip.tight{background:rgba(79,163,255,.16);color:#8cc2ff;border-color:transparent}
+details.ex{padding:0}
+details.ex summary{list-style:none;display:flex;gap:12px;padding:14px;cursor:pointer}
+details.ex summary::-webkit-details-marker{display:none}
+details.ex[open] summary{border-bottom:1px solid var(--line)}
+.ex-body{padding:4px 14px 14px;font-size:15px}
+.ex-body p{margin:10px 0}
+.rank{width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-weight:800;display:flex;align-items:center;justify-content:center;flex:none}
+.ev{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:6px;margin-top:4px}
+.ev-Strong{background:rgba(86,210,122,.16);color:#7fe0a0}.ev-Moderate{background:rgba(255,181,71,.16);color:#ffc977}.ev-Practical{background:rgba(154,161,172,.16);color:var(--muted)}
+.opt{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 0;border-top:1px solid var(--line)}
+.opt button{padding:7px 12px;font-size:14px;white-space:nowrap}
+.src a,.ex-body a{color:var(--accent)}
+.src li{margin:6px 0;font-size:14px}
 .legend{display:flex;gap:14px;font-size:12px;color:var(--muted);margin-top:10px}
 .legend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
 
@@ -147,6 +173,8 @@ nav .badge{position:absolute;top:4px;left:calc(50% + 8px);width:8px;height:8px;b
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>History</button>
   <button data-act="tab" data-tab="body">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4.5" r="2.2"/><path d="M5 8.5c4.5 1.2 9.5 1.2 14 0M12 9.5v5.5M12 15l-3 6.5M12 15l3 6.5"/></svg>Body</button>
+  <button data-act="tab" data-tab="coach">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg>Coach</button>
   <button data-act="tab" data-tab="settings">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Settings</button>
 </nav>
@@ -174,6 +202,8 @@ const LIB = [
   E('Hip Adduction Machine','machine','legs',['adductors']),
   E('Standing Calf Raise','machine','legs',['calves']),
   E('Seated Calf Raise','machine','legs',['calves']),
+  E('Single-Leg Calf Raise','bodyweight','legs',['calves']),
+  E('Tibialis Raise','bodyweight','legs',['shins']),
   E('Cable Glute Kickback','cable','legs',['glutes']),
   E('Cable Pull-Through','cable','legs',['glutes','hamstrings']),
   E('Cable Hip Abduction','cable','legs',['glutes','abductors']),
@@ -193,6 +223,11 @@ const LIB = [
   E('Bodyweight Squat','bodyweight','legs',['quads','glutes']),
   E('Back Extension (45°)','bodyweight','legs',['glutes','hamstrings','lower back']),
   E('Donkey Kick','bodyweight','legs',['glutes']),
+  E('Single-Leg Glute Bridge','bodyweight','legs',['glutes','hamstrings']),
+  E('Cable Hip Adduction','cable','legs',['adductors']),
+  E('Copenhagen Plank','bodyweight','legs',['adductors'],true),
+  E('Nordic Hamstring Curl','bodyweight','legs',['hamstrings']),
+  E('Side Plank Hip Abduction','bodyweight','legs',['glutes','obliques']),
   E('Lat Pulldown','machine','back',['lats']),
   E('Machine Row','machine','back',['upper back','lats']),
   E('Assisted Pull-Up','machine','back',['lats']),
@@ -201,7 +236,9 @@ const LIB = [
   E('Barbell Row','barbell','back',['upper back','lats']),
   E('One-Arm Dumbbell Row','dumbbell','back',['lats','upper back']),
   E('Pull-Up','bodyweight','back',['lats']),
+  E('Chin Tuck','bodyweight','back',['deep neck flexors']),
   E('Chest Press Machine','machine','chest',['chest','triceps']),
+  E('Incline Chest Press Machine','machine','chest',['upper chest','shoulders']),
   E('Pec Deck','machine','chest',['chest']),
   E('Cable Fly','cable','chest',['chest']),
   E('Bench Press','barbell','chest',['chest','triceps']),
@@ -215,6 +252,11 @@ const LIB = [
   E('Overhead Press','barbell','shoulders',['shoulders','triceps']),
   E('Dumbbell Shoulder Press','dumbbell','shoulders',['shoulders','triceps']),
   E('Lateral Raise','dumbbell','shoulders',['shoulders']),
+  E('Cable Y-Raise','cable','shoulders',['lower traps','shoulders']),
+  E('Prone Y-Raise','dumbbell','shoulders',['lower traps']),
+  E('Prone T-Raise','dumbbell','shoulders',['mid traps','rear delts']),
+  E('Side-Lying External Rotation','dumbbell','shoulders',['rotator cuff']),
+  E('Wall Slide','bodyweight','shoulders',['serratus','lower traps']),
   E('Bicep Curl Machine','machine','arms',['biceps']),
   E('Assisted Dip','machine','arms',['triceps','chest']),
   E('Tricep Pushdown','cable','arms',['triceps']),
@@ -222,6 +264,9 @@ const LIB = [
   E('Barbell Curl','barbell','arms',['biceps']),
   E('Dumbbell Curl','dumbbell','arms',['biceps']),
   E('Hammer Curl','dumbbell','arms',['biceps','forearms']),
+  E('Incline Dumbbell Curl','dumbbell','arms',['biceps']),
+  E('Preacher Curl','dumbbell','arms',['biceps']),
+  E('Overhead Cable Triceps Extension','cable','arms',['triceps']),
   E('Overhead Tricep Extension','dumbbell','arms',['triceps']),
   E('Bench Dip','bodyweight','arms',['triceps']),
   E('Ab Crunch Machine','machine','core',['abs']),
@@ -231,6 +276,8 @@ const LIB = [
   E('Side Plank','bodyweight','core',['obliques'],true),
   E('Hanging Leg Raise','bodyweight','core',['abs']),
   E('Dead Bug','bodyweight','core',['abs']),
+  E('Bird Dog','bodyweight','core',['lower back','glutes']),
+  E('Pallof Press','cable','core',['obliques','abs']),
   E('Crunch','bodyweight','core',['abs']),
 ];
 // unit = distance unit, pace = how speed is shown
@@ -387,7 +434,7 @@ let lastScreen = null;
 
 function render() {
   const s = state.screen;
-  app.innerHTML = s === 'history' ? viewHistory() : s === 'detail' ? viewDetail() : s === 'log' ? viewLog() : s === 'body' ? viewBody() : s === 'measure' ? viewMeasure() : viewSettings();
+  app.innerHTML = s === 'history' ? viewHistory() : s === 'detail' ? viewDetail() : s === 'log' ? viewLog() : s === 'body' ? viewBody() : s === 'measure' ? viewMeasure() : s === 'coach' ? viewCoach() : viewSettings();
   const tab = s === 'detail' || s === 'log' ? 'history' : s === 'measure' ? 'body' : s;
   document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
   if (s !== lastScreen) window.scrollTo(0, 0);
@@ -785,6 +832,732 @@ function saveMeasure() {
   saveDb(); mdraft = null; state.screen = 'body'; render(); toast('Saved ✓');
 }
 
+/* ---- Coach: research-based content ---- */
+const SRC = {
+  plotkin: ['Plotkin et al. 2023 — hip thrust vs squat, glute growth measured by MRI', 'https://www.frontiersin.org/journals/physiology/articles/10.3389/fphys.2023.1279170/full'],
+  kubo: ['Kubo et al. 2019 — full vs half squats, glute growth', 'https://link.springer.com/doi/10.1007/s00421-019-04181-y'],
+  glutemeta: ['Systematic review & meta-analysis 2025 — training and glute growth', 'https://www.frontiersin.org/articles/10.3389/fphys.2025.1542334/full'],
+  upperlower: ['Review — upper vs lower glute exercises (incl. 10-week cable study)', 'https://brookbushinstitute.com/articles/gluteus-maximus-exercises-upper-glutes-vs-lower-glutes-systematic-review'],
+  gmed2020: ['Systematic review 2020 — best gluteus medius exercises', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC7727410'],
+  macadam: ['Macadam et al. 2015 — glute activation in abduction exercises', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC4595911'],
+  focus: ['Attentional focus study 2018 — focusing on the muscle grew it more', 'https://pubmed.ncbi.nlm.nih.gov/29533715/'],
+  hipdips: ['Cleveland Clinic — what hip dips are', 'https://health.clevelandclinic.org/hip-dips'],
+  larsen: ['Larsen et al. 2025 — cable vs dumbbell lateral raises, side delt growth', 'https://www.frontiersin.org/articles/10.3389/fphys.2025.1611468/full'],
+  ucs: ['Meta-analysis 2024 — exercise for forward head & rounded shoulders', 'https://link.springer.com/article/10.1186/s12891-024-07224-4'],
+  cools: ['Review of Cools et al. 2007 — exercises for trapezius balance', 'https://brookbushinstitute.com/article/what-are-the-best-exercises-to-promote-scapular-muscle-balance'],
+  pecstretch: ['Pectoral stretching study 2023 — range of motion after 7 weeks', 'https://pubmed.ncbi.nlm.nih.gov/37261567/'],
+};
+const EV_LABEL = {Strong: 'Strong evidence · growth studies', Moderate: 'Moderate evidence · activation studies', Practical: 'Practical · expert consensus'};
+// Shared exercise recommendations, reused across issues
+const R = {
+  hipThrust: {name: 'Hip thrust', opts: ['Hip Thrust Machine', 'Barbell Hip Thrust'], ev: 'Strong', dose: '3–4 sets × 8–12 reps, stop 1–3 reps short of failure',
+    how: 'Upper back on the pad or bench, feet flat about hip-width. Drive through your heels until your hips are in line with your body. Keep your chin tucked and ribs down (don’t arch your lower back), squeeze for 1 second at the top.'},
+  deepSquat: {name: 'Deep squat', opts: ['Smith Machine Squat', 'Goblet Squat'], ev: 'Strong', dose: '3–4 sets × 6–12 reps',
+    how: 'Feet shoulder-width, toes slightly out. Sit down between your heels as deep as you can with a neutral back (thighs below parallel), knees following your toes. Drive up through the whole foot.'},
+  splitSquat: {name: 'Bulgarian split squat / reverse lunge', opts: ['Bulgarian Split Squat', 'Reverse Lunge'], ev: 'Moderate', dose: '3 sets × 8–12 reps each leg',
+    how: 'Rear foot on a bench (or step back for a lunge). Lean your torso slightly forward and sink deep. The forward lean and longer stride shift the work from your thigh to your glute.'},
+  rdl: {name: 'Romanian deadlift / pull-through', opts: ['Cable Pull-Through', 'Romanian Deadlift'], ev: 'Moderate', dose: '3 sets × 8–12 reps',
+    how: 'Soft knees, push your hips straight back until you feel a strong stretch in the back of your legs, back flat. Squeeze your glutes to stand up; don’t lean back at the top.'},
+  abduction: {name: 'Seated hip abduction, leaning forward', opts: ['Hip Abduction Machine', 'Cable Hip Abduction'], ev: 'Moderate', dose: '3–4 sets × 12–20 reps, slow on the way back',
+    how: 'Sit on the abduction machine, lean your torso forward (hold the handles or the seat) and push your knees all the way out. Pause, then return slowly. Leaning forward shifts more of the work onto the glutes.'},
+  sidePlank: {name: 'Side plank leg lift / standing cable abduction', opts: ['Cable Hip Abduction', 'Side Plank Hip Abduction'], ev: 'Moderate', dose: '3 sets × 10–15 reps each side',
+    how: 'Cable: ankle strap on the far leg, stand tall and sweep the leg out to the side without leaning. Side plank: hold a side plank and lift the top leg up and slightly back.'},
+  stepUp: {name: 'Step-up', opts: ['Step-Up'], ev: 'Moderate', dose: '3 sets × 8–12 reps each leg',
+    how: 'Use a knee-height box. Put your whole foot on it, lean slightly forward and push through the heel of the top leg only, without pushing off the back foot.'},
+  backExt: {name: '45° back extension (glute version)', opts: ['Back Extension (45°)'], ev: 'Practical', dose: '3 sets × 12–20 reps',
+    how: 'Pad just below your hip bones, feet turned out, upper back slightly rounded. Lower down, then squeeze your glutes to lift until your body is in a straight line. Don’t arch your lower back at the top.'},
+  kickback: {name: 'Cable / machine glute kickback', opts: ['Cable Glute Kickback', 'Glute Kickback Machine'], ev: 'Moderate', dose: '3 sets × 12–15 reps each leg',
+    how: 'Hinge slightly forward holding the machine, kick the leg back and slightly out, squeeze the glute at the end. Keep your lower back still; the movement comes from the hip.'},
+  bridge: {name: 'Glute bridge (warm-up)', opts: ['Glute Bridge', 'Single-Leg Glute Bridge'], ev: 'Practical', dose: '2 sets × 10–15 reps with a 2-second squeeze, before leg day',
+    how: 'Lie on your back, knees bent, feet flat. Tuck your pelvis slightly, then lift your hips by squeezing your glutes, not by arching your back. Single-leg makes it harder.'},
+  latRaise: {name: 'Lateral raise', opts: ['Cable Lateral Raise', 'Lateral Raise'], ev: 'Strong', dose: '3–5 sets × 12–20 reps, 2× a week',
+    how: 'Slight lean forward, lead with your elbows, raise to shoulder height. Keep your shoulders down away from your ears (don’t shrug). Lower slowly. Cable and dumbbell work equally well, so use whichever you like.'},
+  press: {name: 'Shoulder press', opts: ['Shoulder Press Machine', 'Dumbbell Shoulder Press'], ev: 'Moderate', dose: '3 sets × 6–12 reps',
+    how: 'Back against the pad, press up and slightly in until arms are nearly straight, lower until hands are around chin level. Keep ribs down so your lower back doesn’t arch.'},
+  rearDelt: {name: 'Rear delt fly / reverse fly', opts: ['Rear Delt Fly Machine', 'Prone T-Raise'], ev: 'Moderate', dose: '3 sets × 12–20 reps',
+    how: 'Arms slightly bent, sweep them out and back in a wide arc, thumbs up, squeezing between your shoulder blades. Don’t shrug.'},
+  facePull: {name: 'Face pull', opts: ['Face Pull'], ev: 'Practical', dose: '3 sets × 12–15 reps',
+    how: 'Rope at forehead height. Pull towards your face, elbows high, and rotate your hands back so they finish beside your ears. Squeeze your shoulder blades together.'},
+  row: {name: 'Seated row (shoulder blades back)', opts: ['Seated Cable Row', 'One-Arm Dumbbell Row'], ev: 'Moderate', dose: '3 sets × 10–15 reps',
+    how: 'Sit tall, pull towards your lower ribs, and finish by squeezing your shoulder blades back and down. Let them move forward slightly on the way back for a full range.'},
+  extRot: {name: 'Side-lying external rotation', opts: ['Side-Lying External Rotation'], ev: 'Moderate', dose: '2–3 sets × 12–15 reps each arm, light weight',
+    how: 'Lie on your side, elbow bent 90° and tucked against your waist (a rolled towel helps). Rotate the forearm up towards the ceiling, slowly back down.'},
+  yRaise: {name: 'Y-raise (lower traps)', opts: ['Cable Y-Raise', 'Prone Y-Raise'], ev: 'Moderate', dose: '3 sets × 10–15 reps, light weight',
+    how: 'Lying face-down on an incline bench (or with low cables crossed), raise straight arms up and out into a Y, thumbs up. Think "shoulders down and back"; don’t let them creep to your ears.'},
+  pulldown: {name: 'Lat pulldown (shoulders down)', opts: ['Lat Pulldown', 'Assisted Pull-Up'], ev: 'Practical', dose: '3 sets × 8–12 reps',
+    how: 'Start each rep by pulling your shoulders down away from your ears, then bring the bar to your upper chest. At the top, let your arms go fully straight for a stretch.'},
+  wallSlide: {name: 'Wall slide', opts: ['Wall Slide'], ev: 'Practical', dose: '2–3 sets × 10 slow reps',
+    how: 'Back, head and forearms against a wall. Slide your arms up overhead keeping contact with the wall, ribs down so your lower back doesn’t arch. Go only as high as you can with good posture.'},
+};
+const S = { // stretches
+  hipFlexor: {n: 'Kneeling hip flexor stretch', hold: '30–45 s each side, 2×', how: 'Kneel on one knee, tuck your pelvis under and squeeze the glute of the back leg, then shift forward gently. You should feel it at the front of the back hip.'},
+  figure4: {n: 'Figure-4 glute stretch', hold: '30–45 s each side', how: 'Lying on your back, cross one ankle over the opposite knee and pull that thigh towards you.'},
+  tfl: {n: 'Standing side-hip stretch', hold: '30 s each side', how: 'Cross one leg behind the other and lean your hips towards the back leg’s side, reaching the arm overhead.'},
+  hamstring: {n: 'Standing hamstring stretch', hold: '30 s each side', how: 'Heel on a low step, leg straight, hinge forward from the hips with a flat back.'},
+  doorway: {n: 'Doorway chest stretch', hold: '30–45 s, 2–3×, daily', how: 'Forearms on a door frame at shoulder height, step through until you feel a stretch across the chest and front of the shoulders.'},
+  thoracic: {n: 'Upper-back extension on a foam roller', hold: '1 minute', how: 'Roller across your upper back, hands supporting your head, gently lean back over it. Move it up and down a few centimetres.'},
+  upperTrap: {n: 'Upper-trap stretch', hold: '30 s each side, 2×', how: 'Sit on one hand, tilt the opposite ear towards your shoulder, gently assist with the other hand.'},
+  levator: {n: 'Levator stretch', hold: '30 s each side', how: 'Turn your nose towards your armpit and gently pull your head down with the hand on that side.'},
+  lat: {n: 'Lat stretch on a bench', hold: '30–45 s, 2×', how: 'Kneel facing a bench, elbows on it, hands together. Sit your hips back and let your chest sink until you feel it along the sides of your back.'},
+};
+const ISSUES = {
+  glute_flat: {name: 'Flat / underdeveloped glutes', short: 'More overall size and roundness',
+    causes: 'Glutes get little work in daily life (lots of sitting), and many leg days lean on quad exercises like leg press and leg extension. Glutes grow from heavy hip-extension work through a full range of motion, with enough weekly sets (roughly 10–20) and gradually adding weight.',
+    weak: ['Gluteus maximus', 'Gluteus medius'], tight: ['Hip flexors (from sitting)'],
+    ex: [
+      {...R.hipThrust, why: 'In a 9-week MRI study, hip thrusts grew the glutes as much as squats (slightly more on average) while hardly growing the quads, so it’s the most glute-focused option.'},
+      {...R.deepSquat, why: 'Full-depth squats grew the glutes about 3× more than half squats (≈6.7% vs 2.2%) and matched hip thrusts for glute growth, but they also build the thighs.'},
+      {...R.splitSquat, why: 'Loads each glute on its own in a deep, stretched position. A meta-analysis found both compound and isolation hip-extension exercises build the glutes.'},
+      {...R.rdl, why: 'Trains the glutes and hamstrings while stretched under load, a position that’s good for growth.'},
+    ],
+    stretch: [S.hipFlexor, S.figure4],
+    expect: 'With 2–3 glute sessions a week, most people notice a change after 8–12 weeks. Shape also depends on where your body stores fat and your bone structure.',
+    src: ['plotkin', 'kubo', 'glutemeta']},
+  glute_upper: {name: 'Lacking upper-glute “shelf”', short: 'Fuller top and sides of the glutes',
+    causes: 'The upper part of the glute and the gluteus medius (side of the hip) are worked mainly by moving the leg out to the side (abduction). Squats and hip thrusts hit them less, so they lag behind if you only do those.',
+    weak: ['Upper gluteus maximus', 'Gluteus medius', 'Gluteus minimus'], tight: ['TFL (front-side of the hip, can take over)'],
+    ex: [
+      {...R.abduction, why: 'Abduction work biases the upper glutes: in a 10-week cable study, abductions grew the upper glute more than the lower. Leaning forward (hips bent ~45–90°) increases glute involvement.'},
+      {...R.hipThrust, why: 'The best overall glute builder; in the MRI study its growth estimates were slightly higher than squats for the upper glute too.'},
+      {...R.sidePlank, why: 'Side-plank abduction and standing resisted abduction are among the highest-activation glute medius exercises in systematic reviews.'},
+      {...R.stepUp, why: 'Step-ups, especially lateral ones, rank highly for glute medius activation while also working the whole glute.'},
+    ],
+    stretch: [S.figure4, S.tfl],
+    expect: 'Do abduction work 2–3× a week alongside hip thrusts. A visible “shelf” comes from muscle plus a lower body-fat level in that area.',
+    src: ['upperlower', 'plotkin', 'gmed2020', 'macadam']},
+  glute_lower: {name: 'Lacking lower-glute lift', short: 'More lift where glutes meet the thighs',
+    causes: 'The lower glute fibres work hardest when you extend the hip from a deeply bent position: the bottom of squats, lunges and Romanian deadlifts. Short-range reps and quad-heavy leg days under-load it. Fat also tends to sit here.',
+    weak: ['Lower gluteus maximus', 'Hamstrings'], tight: ['Hip flexors'],
+    ex: [
+      {...R.deepSquat, why: 'Depth matters: full squats grew the glutes about 3× more than half squats.'},
+      {...R.kickback, why: 'In a 10-week cable study, hip-extension kickbacks grew the lower glute more than the upper.'},
+      {...R.backExt, why: 'Straight-leg hip extension may bias the lower glute (early, weaker evidence) and is easy to feel in the glutes.'},
+      {...R.splitSquat, why: 'Deep single-leg work loads the glute at long length, right where the lower fibres work hardest.'},
+    ],
+    stretch: [S.hipFlexor, S.hamstring],
+    expect: 'No exercise fully isolates the lower glute, but these bias it. Lower body fat makes the glute–thigh crease more defined.',
+    src: ['kubo', 'upperlower', 'glutemeta']},
+  glute_hipdips: {name: 'Hip dips', short: 'Inward curve below the hip bone',
+    causes: 'Hip dips are mostly bone structure: the gap between the top of the pelvis (iliac crest) and the bony bump at the top of the thigh bone (greater trochanter). Everyone has them to some degree. How visible they are depends on your hip shape, muscle and where you store fat. They’re completely normal and don’t affect how your hips work.',
+    weak: ['Gluteus medius', 'Gluteus minimus', 'Upper gluteus maximus'], tight: [],
+    ex: [
+      {...R.abduction, why: 'Builds the gluteus medius, the muscle that sits right over the dip.'},
+      {...R.sidePlank, why: 'High glute medius activation in reviews, with no machine needed.'},
+      {...R.hipThrust, why: 'More overall glute size helps fill out the area above and to the side.'},
+      {...R.stepUp, why: 'Good glute medius work plus overall glute development.'},
+    ],
+    stretch: [],
+    expect: 'Training can make the area look fuller, but it can’t change bone shape. In some people, more muscle above and below even makes the dip a little more visible. It’s anatomy, not a flaw.',
+    src: ['hipdips', 'gmed2020']},
+  glute_fire: {name: 'Glutes don’t fire', short: 'Thighs or lower back take over',
+    causes: 'Usually it’s technique and focus, not “switched off” glutes: doing exercises in a quad-dominant way (knees far forward, very upright), arching the lower back to finish a rep instead of squeezing the hips through, or tight hip flexors from sitting stopping the hip from fully straightening. Concentrating on the target muscle helps: in one study it grew the muscle more.',
+    weak: ['Gluteus maximus', 'Gluteus medius'], tight: ['Hip flexors', 'Lower back muscles', 'Quads'],
+    ex: [
+      {...R.bridge, why: 'An easy way to practise full hip extension without the lower back, and to feel the glutes before heavier work.'},
+      {...R.hipThrust, why: 'The best glute builder. Pause at the top with chin tucked and ribs down so your back can’t take over.'},
+      {...R.kickback, why: 'Isolation is easier to feel; think about squeezing the glute on every rep.'},
+      {...R.abduction, why: 'Wakes up the side glutes, which also helps keep your knees from caving in on squats.'},
+    ],
+    stretch: [S.hipFlexor, S.figure4],
+    expect: 'Within 2–4 weeks you should feel your glutes working more during leg exercises; growth follows with consistent training.',
+    src: ['focus', 'plotkin']},
+  sh_narrow: {name: 'Narrow / underdeveloped shoulders', short: 'More width and a rounder cap',
+    causes: 'Shoulder width comes mainly from the side delts. Pressing mostly trains the front delts, so side delts need their own work (lateral raises). Rear delts add roundness when seen from the side and back.',
+    weak: ['Side delts', 'Rear delts'], tight: [],
+    ex: [
+      {...R.latRaise, why: 'In an 8-week study, cable and dumbbell lateral raises grew the side delts equally (about +3–5%).'},
+      {...R.press, why: 'Lets you lift heavier and builds the front and some of the side delt.'},
+      {...R.rearDelt, why: 'Rear delts complete the rounded look and balance your posture.'},
+    ],
+    stretch: [],
+    expect: 'Delts grow slowly, so give it 3–4 months of 2 sessions a week. Your collarbone width sets the frame you’re building on.',
+    src: ['larsen']},
+  sh_rounded: {name: 'Rounded shoulders', short: 'Shoulders roll forward, slouched upper back',
+    causes: 'Long hours sitting or on the phone, plus more chest and pressing work than pulling. A tight chest (especially the small pec minor muscle) pulls the shoulder blades forward, while weaker mid/lower traps, rear delts and rotator cuff can’t hold them back.',
+    weak: ['Middle & lower trapezius', 'Rhomboids', 'Rear delts', 'Rotator cuff'], tight: ['Pec minor', 'Pec major', 'Upper trapezius'],
+    ex: [
+      {...R.rearDelt, why: 'Reverse flys with thumbs up (prone horizontal abduction) are among the best exercises for working the mid/lower traps while keeping the upper traps quiet.'},
+      {...R.row, why: 'Strengthening the upper back, combined with chest stretching, improved shoulder posture in trials.'},
+      {...R.extRot, why: 'Strengthens the rotator cuff and was one of the top picks for trapezius balance in activation research.'},
+      {...R.facePull, why: 'Trains rear delts, mid traps and the rotator cuff in one movement.'},
+    ],
+    stretch: [S.doorway, S.thoracic],
+    expect: 'Combining stretching with strengthening improved shoulder and neck angles in studies over about 6–8 weeks. The upper-back curve changes less. Desk and phone habits matter too.',
+    src: ['ucs', 'cools']},
+  sh_sloped: {name: 'Sloped shoulders / traps taking over', short: 'Steep slope from neck to shoulder',
+    causes: 'Two common versions: big or overactive upper traps make the neck-to-shoulder line slope steeply (often from shrugs, heavy carries, or shrugging during raises and presses), or small side delts leave no “cap” at the end of the shoulder. The angle of your collarbones (genetics) plays a big part too.',
+    weak: ['Side delts', 'Lower trapezius', 'Serratus anterior'], tight: ['Upper trapezius', 'Levator scapulae'],
+    ex: [
+      {...R.latRaise, why: 'Builds the shoulder cap. Keep shoulders down and stop at shoulder height so the traps stay out of it.'},
+      {...R.yRaise, why: 'Targets the lower traps, which pull the shoulder blades down and balance the upper traps.'},
+      {...R.extRot, why: 'Works the lower traps with minimal upper-trap involvement in activation research.'},
+      {...R.pulldown, why: 'Practises pulling the shoulder blades down under load.'},
+    ],
+    stretch: [S.upperTrap, S.levator],
+    expect: 'You can build the shoulder cap and calm the upper traps. Also cut back on shrugs and upright rows. Collarbone angle won’t change.',
+    src: ['larsen', 'cools']},
+  sh_stiff: {name: 'Stiff overhead', short: 'Hard to raise arms fully overhead',
+    causes: 'Tight lats and chest muscles, and a stiff upper back, limit how far your arms go overhead. It often shows as your lower back arching when you press or reach overhead.',
+    weak: ['Lower trapezius', 'Serratus anterior'], tight: ['Lats', 'Pec major & minor', 'Upper back (stiff)'],
+    ex: [
+      {...R.wallSlide, why: 'Practises moving the arms overhead with the shoulder blades rotating properly and the back staying neutral.'},
+      {...R.pulldown, why: 'Letting the arms go fully straight at the top gives the lats a stretch under load.'},
+      {...R.yRaise, why: 'Strengthens the lower traps that help rotate the shoulder blades upward.'},
+    ],
+    stretch: [S.lat, S.thoracic, S.doorway],
+    expect: 'Regular stretching reliably improves range of motion over weeks (one study: +6% shoulder range after 7 weeks of chest stretching). Pain or catching when lifting the arm? See a physio.',
+    src: ['pecstretch']},
+};
+/* ---- Research pass 2: hips + lower back ---- */
+Object.assign(SRC, {
+  pelvicnorm: ['Study of healthy adults — pelvic tilt, lower-back curve and abs were not related', 'https://pubmed.ncbi.nlm.nih.gov/2951745/'],
+  postchain: ['Training study 2023 — posterior-chain & core training improved pelvic posture', 'https://dx.doi.org/10.23736/s0022-4707.23.15171-1'],
+  hfstretch: ['Randomised crossover trial 2024 — hip flexor stretch with pelvic tuck vs standard stretch', 'https://link.springer.com/article/10.1186/s12891-024-07988-9'],
+  lateraltilt: ['Randomised trial 2024 — glute control training and pelvic alignment', 'https://doaj.org/article/02747c986eef432591aa0fc8be51c7e0'],
+  romanchair: ['Randomised trial 2002 — 8 weeks of Roman chair back extensions', 'https://pubmed.ncbi.nlm.nih.gov/12195070/'],
+  lbpmeta: ['Meta-analysis 2021 — exercise for non-specific low back pain', 'https://www.nature.com/articles/s41598-021-96403-7'],
+});
+Object.assign(R, {
+  backExtLow: {name: '45° back extension (lower-back version)', opts: ['Back Extension (45°)'], ev: 'Moderate', dose: '3 sets × 10–15 reps, slow and controlled',
+    how: 'Pad at your hips, arms crossed on your chest. Let your back round gently at the bottom, then lift by straightening through your lower back until your body is in a straight line. Don’t swing or over-arch at the top.'},
+  deadBug: {name: 'Dead bug', opts: ['Dead Bug', 'Hanging Leg Raise'], ev: 'Practical', dose: '3 sets × 8–10 slow reps each side',
+    how: 'On your back, arms up, knees over hips. Press your lower back gently into the floor, then slowly lower the opposite arm and leg without letting your back lift. Breathe out as you lower.'},
+  birdDog: {name: 'Bird dog', opts: ['Bird Dog'], ev: 'Practical', dose: '3 sets × 8 reps each side, 5–10 s hold',
+    how: 'On hands and knees, back flat. Reach one arm forward and the opposite leg back until level with your body, hold without rotating your hips, return slowly.'},
+  sidePlankHold: {name: 'Side plank', opts: ['Side Plank'], ev: 'Practical', dose: '3 holds × 20–45 s each side',
+    how: 'On your forearm, elbow under shoulder, body in a straight line from head to feet. Push the floor away and keep your hips lifted.'},
+  hipThrustTuck: {name: 'Hip thrust / glute bridge, tuck at the top', opts: ['Hip Thrust Machine', 'Glute Bridge'], ev: 'Moderate', dose: '3 sets × 10–15 reps with a 2-second squeeze',
+    how: 'At the top, tuck your pelvis slightly (tailbone towards your knees) and keep your ribs down, so your glutes, not your lower back, finish the movement.'},
+  legRaise: {name: 'Hanging knee / leg raise', opts: ['Hanging Leg Raise'], ev: 'Practical', dose: '3 sets × 8–12 reps',
+    how: 'Hang from a bar or use the arm-rest station, lift your knees towards your chest with control and lower slowly without swinging.'},
+});
+Object.assign(S, {
+  hipFlexorTuck: {n: 'Kneeling hip flexor stretch (with pelvic tuck)', hold: '30–45 s each side, 2×, daily', how: 'Kneel on one knee. Before leaning forward, tuck your tailbone under and squeeze the back-leg glute; you’ll feel the stretch sooner. A 2024 trial found this version works better than the standard stretch.'},
+  couch: {n: 'Couch stretch (front of thigh)', hold: '30–45 s each side', how: 'Kneel with your back foot up against a sofa or wall, front foot forward. Tuck your pelvis and lift your chest until you feel it along the front of the back thigh.'},
+  catCow: {n: 'Cat–cow', hold: '8–10 slow reps', how: 'On hands and knees, slowly round your back up, then let it sink and lift your chest. Move through the whole spine.'},
+  child: {n: 'Child’s pose', hold: '30–60 s', how: 'Kneel, sit back towards your heels and reach your arms forward on the floor, letting your back relax.'},
+  ql: {n: 'Standing side bend (side of lower back)', hold: '30 s each side, longer on the high-hip side', how: 'Stand tall, reach one arm overhead and lean to the opposite side until you feel it along the side of your waist.'},
+});
+Object.assign(ISSUES, {
+  hip_flexors: {name: 'Tight hip flexors from sitting', short: 'Front of the hips feels tight',
+    causes: 'Sitting keeps the hip flexors (iliopsoas and the front-thigh muscle) shortened for hours. They can feel tight and stop your hip from fully straightening, which makes glute exercises feel like lower back and can tip you towards an arched lower back when standing.',
+    weak: ['Glutes', 'Deep core'], tight: ['Iliopsoas (hip flexors)', 'Rectus femoris (front thigh)', 'TFL'],
+    ex: [
+      {...R.hipThrustTuck, ev: 'Practical', why: 'Trains the glutes to fully straighten the hip, the opposite job to the hip flexors.'},
+      {...R.splitSquat, ev: 'Practical', why: 'Stretches the back-leg hip flexor under load while strengthening the front-leg glute.'},
+      {...R.deadBug, why: 'Teaches your abs to hold the pelvis steady while your legs move.'},
+    ],
+    stretch: [S.hipFlexorTuck, S.couch],
+    expect: 'Stretching daily improves range over a few weeks. Get up and move every 30–60 minutes of sitting; it matters as much as the stretches.',
+    src: ['hfstretch']},
+  apt: {name: 'Forward hip tilt', short: 'Arched lower back, belly pushed out',
+    causes: 'Some forward tilt is normal, and the healthy range is wide. When it looks exaggerated, common contributors are long sitting (tight hip flexors), weak glutes and abs, and standing habits like locking your knees or leaning back. Research finds the angle is only weakly linked to how arched your back looks, and not clearly linked to back pain.',
+    weak: ['Glutes', 'Abs (deep and lower)', 'Hamstrings'], tight: ['Hip flexors', 'Lower back muscles', 'Front thigh (rectus femoris)'],
+    ex: [
+      {...R.hipThrustTuck, why: 'Posterior-chain and core training improved pelvic posture in a training study. Finishing each rep tucked teaches the glutes to pull the pelvis back.'},
+      {...R.deadBug, why: 'Trains the abs that tilt the pelvis backwards, while keeping your ribs down.'},
+      {...R.rdl, ev: 'Practical', why: 'Strengthens the hamstrings, which also help pull the pelvis back.'},
+      {...R.splitSquat, ev: 'Practical', why: 'Loaded stretch for the back-leg hip flexor plus glute work for the front leg.'},
+    ],
+    stretch: [S.hipFlexorTuck, S.couch],
+    expect: 'Exercise changes pelvic angle only modestly, and the evidence is limited. What usually improves most is strength, control and how you stand. Back pain? See a physio.',
+    src: ['pelvicnorm', 'postchain', 'hfstretch']},
+  ppt: {name: 'Backward hip tilt', short: 'Tucked pelvis, flat lower back, flatter-looking bum',
+    causes: 'The pelvis tucks under and the lower back flattens. It’s common with slumped sitting (on your tailbone) and standing with your hips pushed forward. Tight hamstrings often get the blame, but research shows only a loose link, and in one study hamstring stretching alone didn’t change standing pelvic position.',
+    weak: ['Lower back muscles', 'Hip flexors', 'Glutes'], tight: ['Hamstrings', 'Abs (if always braced)'],
+    ex: [
+      {...R.backExtLow, why: 'Strengthens the lower back muscles that tilt the pelvis forward; Roman chair training improved back endurance by 42% in 8 weeks.'},
+      {...R.rdl, ev: 'Practical', why: 'Practises the hip hinge with a neutral, slightly arched lower back while working the hamstrings at length.'},
+      {...R.hipThrust, why: 'Builds glute size, which counters the flatter look.'},
+      {...R.legRaise, why: 'Strengthens the hip flexors, which tend to be weak with this posture.'},
+    ],
+    stretch: [S.hamstring, S.catCow],
+    expect: 'Expect small posture changes over a couple of months; sitting upright on your sit bones helps. Glute shape will improve faster than pelvic angle.',
+    src: ['romanchair', 'postchain']},
+  lateral_tilt: {name: 'Sideways hip tilt', short: 'One hip sits higher than the other',
+    causes: 'It can be structural (a true leg-length difference or a curve in the spine) or functional: muscle imbalance or habits like standing on one leg or carrying a bag or child on one hip. A weak glute medius lets the pelvis drop on one side, while the side-waist muscle on the high side often feels tight.',
+    weak: ['Gluteus medius'], tight: ['Quadratus lumborum (side of lower back, high side)', 'Inner thigh muscles'],
+    ex: [
+      {...R.sidePlank, why: 'In a 2024 randomised trial, glute control training improved pelvic alignment in people with a functional leg-length difference.'},
+      {...R.abduction, why: 'Builds the side glutes that keep the pelvis level.'},
+      {...R.stepUp, ev: 'Practical', why: 'Single-leg work trains each side to hold the pelvis level. Start with your weaker side.'},
+      {...R.sidePlankHold, why: 'Strengthens the side core on both sides; hold a little longer on your weaker side.'},
+    ],
+    stretch: [S.ql, S.tfl],
+    expect: 'A functional tilt often improves within about 6 weeks of glute training. A true leg-length difference or scoliosis needs a physio or doctor (sometimes a simple heel lift is the fix). Get checked if it’s large or painful.',
+    src: ['lateraltilt', 'gmed2020']},
+  lowback_weak: {name: 'Weak / stiff lower back', short: 'Lower back tires quickly or feels stiff',
+    causes: 'The lower back muscles (erector spinae) rarely get direct training, and long sitting makes the area feel stiff. They adapt to training like any other muscle. Exercise is also the main recommended treatment for everyday back pain.',
+    weak: ['Lower back muscles (erector spinae)', 'Glutes', 'Deep core'], tight: ['Hip flexors', 'Hamstrings'],
+    ex: [
+      {...R.backExtLow, why: '8 weeks of Roman chair back extensions improved back endurance by 42% in healthy adults.'},
+      {...R.birdDog, why: 'Trains the back and glutes to hold your spine steady without heavy load.'},
+      {...R.rdl, ev: 'Practical', why: 'Strengthens the whole back of the body. Start light and keep your back flat.'},
+      {...R.sidePlankHold, why: 'Builds the side core that stabilises the lower back.'},
+    ],
+    stretch: [S.catCow, S.child, S.hipFlexorTuck],
+    expect: 'Endurance usually improves noticeably within 6–8 weeks. Pain spreading down the leg, numbness, or pain that doesn’t settle needs a doctor or physio.',
+    src: ['romanchair', 'lbpmeta']},
+});
+
+/* ---- Research pass 3: thighs + hamstrings ---- */
+Object.assign(SRC, {
+  maeo: ['Maeo et al. 2021 — seated vs lying leg curls, hamstring growth by MRI', 'https://pubmed.ncbi.nlm.nih.gov/33009197/'],
+  spotfat: ['Ramírez-Campillo et al. 2013 — training one leg didn’t remove fat from that leg', 'https://repositorio.unab.cl/xmlui/handle/ria/53433'],
+  spotmeta: ['Systematic review & meta-analysis 2022 — no evidence for spot fat reduction', 'https://doi.org/10.5114/HM.2022.110373'],
+  valgusreview: ['Systematic review 2019 — hip strength and knees caving in (women)', 'https://pubmed.ncbi.nlm.nih.gov/29859898/'],
+  valgusint: ['Systematic review 2022 — hip strengthening trials and knee alignment', 'https://link.springer.com/content/pdf/10.1007/s11332-022-00953-w.pdf'],
+  ecc2012: ['Systematic review 2012 — eccentric training improves flexibility', 'https://pubmed.ncbi.nlm.nih.gov/22522590/'],
+  eccmeta: ['Meta-analysis 2021 — eccentric & Nordic training lengthen hamstring fibres', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC8577763'],
+});
+Object.assign(R, {
+  seatedCurl: {name: 'Seated leg curl', opts: ['Seated Leg Curl', 'Lying Leg Curl'], ev: 'Strong', dose: '3–4 sets × 8–12 reps',
+    how: 'Adjust so your knees line up with the machine’s pivot and lean your torso slightly forward. Curl your heels down and back, pause, then lower slowly until your legs are almost straight.'},
+  nordic: {name: 'Nordic hamstring curl', opts: ['Nordic Hamstring Curl'], ev: 'Moderate', dose: '2–3 sets × 4–6 slow reps',
+    how: 'Kneel with your ankles anchored (machine pad, partner or heavy bar). Keep your body straight from knees to head and lower yourself forwards as slowly as you can, catch yourself with your hands, push back up. Very hard, so start with partial range.'},
+  gobletKnees: {name: 'Goblet squat, knees out', opts: ['Goblet Squat', 'Smith Machine Squat'], ev: 'Practical', dose: '3 sets × 8–12 slow reps',
+    how: 'Feet shoulder-width, toes slightly out. As you lower, actively push your knees out so they stay over your 2nd–3rd toes. Use a mirror and go only as deep as you can keep the knees tracking.'},
+  adduction: {name: 'Hip adduction (inner thigh)', opts: ['Hip Adduction Machine', 'Cable Hip Adduction'], ev: 'Practical', dose: '3 sets × 12–20 reps, slow return',
+    how: 'Start with your legs as wide as is comfortable for a good stretch, squeeze them together, pause, and open slowly.'},
+  sumoDeep: {name: 'Deep / sumo squat', opts: ['Smith Machine Squat', 'Sumo Squat'], ev: 'Strong', dose: '3–4 sets × 8–12 reps',
+    how: 'Wider stance with toes turned out. Sit straight down as deep as you can with a tall chest, knees following toes. The deep bottom position is where the inner thighs work hardest.'},
+  copenhagen: {name: 'Copenhagen plank', opts: ['Copenhagen Plank'], ev: 'Practical', dose: '3 holds × 10–30 s each side',
+    how: 'Side plank with your top leg resting on a bench (knee on the bench is easier, ankle is harder), lift your hips and hold. The top leg’s inner thigh holds you up.'},
+});
+Object.assign(S, {
+  calf: {n: 'Wall calf stretch', hold: '30 s each, knee straight and knee bent', how: 'Hands on a wall, one foot back with the heel down. Lean in with the back knee straight, then bend it slightly to reach the lower calf.'},
+  butterfly: {n: 'Butterfly stretch', hold: '30–45 s', how: 'Sit with the soles of your feet together, hold your ankles, sit tall and let your knees drop out. Lean forward from the hips to deepen.'},
+  sideLunge: {n: 'Side lunge stretch', hold: '30 s each side', how: 'Wide stance, shift your weight onto one bent leg with the other leg straight, toes up, until you feel the inner thigh of the straight leg.'},
+});
+Object.assign(ISSUES, {
+  thigh_bulky: {name: 'Thighs feel bulky / quads dominate', short: 'Front of the thighs bigger than you’d like',
+    causes: 'It’s either muscle or fat. Quads grow readily from squats, leg press, lunges and leg extensions; in an MRI study squats grew the quads far more than hip thrusts did. Thighs are also a common place to store fat, and fat can’t be spot-reduced. Quick check: if it feels firm when you tense it and has grown as you’ve trained, it’s mostly muscle.',
+    weak: ['Glutes', 'Hamstrings'], tight: ['Quads (over-trained)'],
+    ex: [
+      {...R.hipThrust, why: 'Grows the glutes with very little quad growth, shifting your proportions towards the hips.'},
+      {...R.seatedCurl, why: 'Builds the back of the thigh (seated curls grew hamstrings more than lying ones), balancing the front.'},
+      {...R.rdl, why: 'Works glutes and hamstrings with minimal quad involvement.'},
+      {...R.abduction, why: 'Adds glute width so the thighs look smaller in comparison.'},
+    ],
+    stretch: [S.couch, S.hipFlexorTuck],
+    expect: 'If it’s muscle: cut quad-focused work (leg extensions, narrow leg press, front squats) to about 4–6 sets a week; it shrinks slowly over months. If it’s fat: it comes off with overall fat loss, not leg exercises. In a 12-week study, training one leg took fat off the upper body instead.',
+    src: ['plotkin', 'maeo', 'spotfat', 'spotmeta']},
+  knees_cave: {name: 'Knees cave in', short: 'Knees drift inwards on squats, lunges or landing',
+    causes: 'Known as dynamic knee valgus. Common contributors are under-used hip muscles (side and back glutes), stiff ankles, and simply habit and technique. Research links hip strength to knee cave-in inconsistently, so practising the movement correctly matters as much as getting stronger.',
+    weak: ['Gluteus medius', 'Gluteus maximus', 'Hip external rotators'], tight: ['Calves / stiff ankles', 'Inner thighs'],
+    ex: [
+      {...R.gobletKnees, why: 'Practising the right pattern under light load. Reviews suggest strengthening alone has only a small effect, so technique practice comes first.'},
+      {...R.abduction, why: 'Strengthens the side glutes that pull the knees out.'},
+      {...R.sidePlank, why: 'High glute medius activation; helps control the thigh when on one leg.'},
+      {...R.stepUp, ev: 'Practical', why: 'Single-leg control: go slowly and keep the knee over your 2nd toe, using a mirror.'},
+    ],
+    stretch: [S.calf, S.figure4],
+    expect: 'Control often improves within a few weeks of focused practice. If your knee hurts, see a physio.',
+    src: ['valgusreview', 'valgusint', 'gmed2020']},
+  inner_thigh: {name: 'Inner thigh tone', short: 'Firmer inner thighs',
+    causes: 'The inner thigh is made of the adductor muscles, plus a common fat-storage area. Building the adductors makes the area firmer and shapelier; reducing the fat there only happens with overall fat loss.',
+    weak: ['Adductors (inner thigh)', 'Glutes'], tight: ['Adductors (can also feel tight)'],
+    ex: [
+      {...R.sumoDeep, why: 'Full-depth squats grew the inner-thigh muscles more than half squats (6.2% vs 2.7%) in an MRI study.'},
+      {...R.adduction, why: 'Direct inner-thigh work. No growth study yet, but it’s simple and targeted.'},
+      {...R.splitSquat, why: 'Deep single-leg work also loads the adductors as hip extensors.'},
+      {...R.copenhagen, why: 'Strong inner-thigh exercise with no machine needed.'},
+    ],
+    stretch: [S.butterfly, S.sideLunge],
+    expect: 'Firmer inner thighs in about 8–12 weeks. A slimmer look depends on overall fat loss.',
+    src: ['kubo', 'spotfat', 'spotmeta']},
+  outer_thigh: {name: 'Outer thigh / saddlebags', short: 'Fullness on the outside of the upper thighs',
+    causes: 'Mostly fat stored on the outer thighs and hips, a normal pattern for many women and largely genetic. The muscles underneath are small, and training them doesn’t burn the fat over them. Overall fat loss reduces it, and building the glutes changes your hip line so the outer thigh stands out less.',
+    weak: ['Glutes (overall size changes the hip-to-thigh line)'], tight: ['TFL / outer hip'],
+    ex: [
+      {...R.hipThrust, why: 'Bigger glutes reshape the hip line above the saddlebag area.'},
+      {...R.abduction, why: 'Builds the upper and side glutes, filling out the area above.'},
+      {...R.deepSquat, why: 'A big, full-leg movement that builds glutes and uses lots of energy.'},
+    ],
+    stretch: [S.tfl],
+    expect: 'Honestly: the change comes mainly from overall fat loss (mostly nutrition) over months. Strength training keeps your muscle while you lose fat, so you lose fat and not shape.',
+    src: ['spotfat', 'spotmeta', 'plotkin']},
+  ham_weak: {name: 'Weak / underdeveloped hamstrings', short: 'Back of the thighs lacks shape or strength',
+    causes: 'Many leg days focus on squats and leg press, which barely grow the hamstrings (squats didn’t change hamstring size in an MRI study). Hamstrings need their own work: knee bending (leg curls) and hip hinging (Romanian deadlifts). Training them in a stretched position builds more.',
+    weak: ['Hamstrings'], tight: [],
+    ex: [
+      {...R.seatedCurl, why: 'In a 12-week MRI study, seated leg curls grew the hamstrings more than lying curls (+14% vs +9%) because the hip is bent and the muscle stretched.'},
+      {...R.rdl, why: 'The hip-hinge half of hamstring training, loaded at long muscle length.'},
+      {...R.nordic, why: 'Slow lowering lengthens the hamstring fibres (meta-analysis) and builds strength.'},
+    ],
+    stretch: [S.hamstring],
+    expect: 'Hamstrings respond well. With 6–10 sets a week across 2 sessions, expect noticeable change in 8–12 weeks.',
+    src: ['maeo', 'kubo', 'eccmeta']},
+  ham_tight: {name: 'Tight hamstrings', short: 'Can’t reach your toes, back of the legs feels tight',
+    causes: 'Usually a mix of low stretch tolerance and little time with the muscle at long length (sitting with bent knees all day). Both stretching and strength training through a full range improve flexibility. Slow lowering (eccentric) work also lengthens the muscle fibres.',
+    weak: ['Hamstrings at long lengths', 'Glutes'], tight: ['Hamstrings', 'Calves'],
+    ex: [
+      {...R.rdl, why: 'Lowering slowly into a deep stretch counts as eccentric training, which improved flexibility in a systematic review.'},
+      {...R.nordic, why: 'Lengthens hamstring fibres (meta-analysis) while making them stronger.'},
+      {...R.seatedCurl, ev: 'Moderate', why: 'Trains the hamstrings in a stretched position through a full range.'},
+    ],
+    stretch: [S.hamstring, S.calf],
+    expect: 'Range usually improves within 4–8 weeks of stretching 3–5× a week. Pain or tingling shooting down the leg is a nerve issue, so see a physio.',
+    src: ['ecc2012', 'eccmeta']},
+});
+
+/* ---- Research pass 4: upper + mid back ---- */
+Object.assign(SRC, {
+  fhpmeta: ['Sheikhhoseini et al. 2018 — meta-analysis: exercise improves forward head posture', 'https://pubmed.ncbi.nlm.nih.gov/30107937/'],
+  fhpmeta2: ['Meta-analysis 2026 — exercise for forward head posture (≈3.4° better head angle)', 'https://www.dovepress.com/therapeutic-exercise-for-forward-head-posture-in-neck-pain-patients-a--peer-reviewed-fulltext-article-JPR'],
+  latemg: ['EMG study 2004 — lat and mid-back activation in pulldowns and rows', 'https://link.springer.com/article/10.1186/1476-5918-3-4'],
+  maintain: ['Bickel et al. 2011 — a third of the training volume kept muscle in young adults', 'https://pubmed.ncbi.nlm.nih.gov/21131862/'],
+});
+Object.assign(R, {
+  chinTuck: {name: 'Chin tuck', opts: ['Chin Tuck'], ev: 'Moderate', dose: '2–3 sets × 10 reps with a 5-second hold, daily',
+    how: 'Sit or stand tall, eyes level. Glide your head straight back (a "double chin"), without tipping it down. Hold, relax. Lying on your back and lifting the head slightly while tucked makes it harder.'},
+  straightArm: {name: 'Straight-arm pulldown', opts: ['Straight-Arm Pulldown'], ev: 'Practical', dose: '3 sets × 12–15 reps',
+    how: 'Facing a high cable, arms nearly straight, hinge slightly forward. Sweep the bar down to your thighs using your back, not your arms, and let it rise slowly for a stretch.'},
+});
+Object.assign(ISSUES, {
+  fhp: {name: 'Forward head posture', short: 'Head sits forward of your shoulders',
+    causes: 'Long hours looking at screens and phones, often with a rounded upper back. The deep muscles at the front of the neck weaken while the back of the neck and upper traps tighten. It usually comes together with rounded shoulders.',
+    weak: ['Deep neck flexors (front of neck)', 'Middle & lower trapezius', 'Upper-back muscles'], tight: ['Upper trapezius', 'Back of the neck (suboccipitals)', 'Pec minor'],
+    ex: [
+      {...R.chinTuck, why: 'Exercise programmes improved head position in two meta-analyses (about 3–4° on average). Chin tucks are the core of most of them, though evidence for them on their own is limited.'},
+      {...R.rearDelt, why: 'Combined programmes that also train the shoulders and upper back worked best for posture.'},
+      {...R.yRaise, why: 'Strengthens the lower traps that hold the shoulder blades back and down, supporting the neck.'},
+      {...R.row, why: 'Builds the upper back so you can sit and stand taller with less effort.'},
+    ],
+    stretch: [S.upperTrap, S.doorway, S.thoracic],
+    expect: 'Programmes of 8+ weeks gave the biggest gains. Raise your screen to eye level and hold your phone higher; habits matter as much as exercise. Neck pain with arm tingling? See a physio.',
+    src: ['fhpmeta', 'fhpmeta2', 'ucs']},
+  bra_line: {name: 'Upper back tone / bra-line', short: 'Softness around the bra strap and upper back',
+    causes: 'Mostly fat stored around the upper back, plus skin and bra fit. The muscles underneath (lats, mid traps, rhomboids) are often untrained. Building them firms and shapes the area; reducing the fat itself only comes with overall fat loss. Posture also changes how this area looks.',
+    weak: ['Lats', 'Middle trapezius', 'Rhomboids', 'Rear delts'], tight: [],
+    ex: [
+      {...R.row, why: 'Seated rows produced the highest mid-back (mid trap and rhomboid) activation in an EMG study, right under the bra line.'},
+      {...R.pulldown, ev: 'Moderate', why: 'Wide-grip pulldowns had the highest lat activation, firming the sides of the back.'},
+      {...R.rearDelt, why: 'Works the upper back and rear shoulders, which helps posture too.'},
+    ],
+    stretch: [S.thoracic, S.doorway],
+    expect: 'The area firms up in about 8–12 weeks. Softness itself reduces with overall fat loss. Also check your bra fit: a band that’s too tight causes bulges whatever your body fat.',
+    src: ['latemg', 'spotmeta', 'spotfat']},
+  v_taper: {name: 'Wider back / V-taper', short: 'More width through the upper back',
+    causes: 'Back width comes mostly from the lats, the large wing-shaped muscles down the sides of your back. Together with rounder side delts and a smaller-looking waist, they create the V shape. Lats grow from vertical pulls (pulldowns, pull-ups) and rows.',
+    weak: ['Lats', 'Teres major', 'Side delts'], tight: [],
+    ex: [
+      {...R.pulldown, ev: 'Moderate', why: 'Wide-grip pulldowns had the highest lat activation in an EMG study. Let your arms go fully straight at the top for a stretch.'},
+      {...R.row, why: 'Rows also strongly worked the lats while adding mid-back thickness.'},
+      {...R.straightArm, why: 'Isolates the lats with no biceps involvement, so it’s easy to feel the right muscle.'},
+      {...R.latRaise, why: 'Side delts add width at the top of the V; cable and dumbbell raises grew them equally.'},
+    ],
+    stretch: [S.lat],
+    expect: 'Visible width takes about 3–6 months of 10–20 back sets a week. Swimming also builds the lats.',
+    src: ['latemg', 'larsen']},
+  back_broad: {name: 'Back looks too broad', short: 'Back or lats bigger than you’d like',
+    causes: 'Either muscle (the lats and upper back grow from pulldowns, pull-ups, rows, and also from swimming) or frame: your rib cage and shoulder width are bone and won’t change. Some fat can also sit along the sides of the back.',
+    weak: ['Glutes (bigger hips balance your proportions)'], tight: ['Lats (over-trained)', 'Teres major'],
+    ex: [
+      {...R.hipThrust, why: 'Building your hips and glutes balances the upper body, so the back looks less dominant.'},
+      {...R.abduction, why: 'Adds width at the hips for a more balanced silhouette.'},
+      {...R.facePull, why: 'Keeps your posture and shoulders healthy without adding much back width.'},
+    ],
+    stretch: [S.lat],
+    expect: 'If it’s muscle: cut direct lat work (pulldowns, pull-ups, heavy rows) right down. In one study, young adults kept their muscle on just a third of their usual training, so you need to go lower than that for it to shrink, slowly over months. If you swim a lot, that keeps the lats busy too. If it’s fat: overall fat loss. Bone frame won’t change.',
+    src: ['maintain', 'plotkin']},
+});
+
+/* ---- Research pass 5: core + chest ---- */
+Object.assign(SRC, {
+  abfat: ['Vispute et al. 2011 (NSCA summary) — 6 weeks of ab exercise didn’t reduce belly fat', 'https://www.nsca.com/contentassets/60c4deb55cd640549806ed8f3f170b9e/trainertips_spot-reduction.pdf'],
+  abspot2023: ['Brobakken et al. 2023 — trial suggesting some local fat use from ab endurance work (overweight men)', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC10680576'],
+  dra: ['Systematic review 2021 — exercise for post-pregnancy ab separation', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC8721086'],
+  absregion: ['University study — “lower” vs “upper” ab exercises grew the abs the same', 'https://repositorio.ufmg.br/handle/1843/80572'],
+  pilates: ['MRI study 2012 — 9 months of Pilates grew the abdominal muscles', 'https://pubmed.ncbi.nlm.nih.gov/22357302/'],
+  pecangle: ['High-density EMG study — incline press targets the upper chest', 'https://pubmed.ncbi.nlm.nih.gov/34644424/'],
+  incline2020: ['Training study 2020 — incline vs flat bench and chest growth', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC7449336'],
+  kikuchi: ['Kikuchi & Nakazato 2017 — push-ups vs bench press, similar chest growth', 'https://pubmed.ncbi.nlm.nih.gov/29541130/'],
+});
+Object.assign(R, {
+  crunch: {name: 'Machine or cable crunch', opts: ['Ab Crunch Machine', 'Cable Crunch'], ev: 'Moderate', dose: '3 sets × 10–15 reps',
+    how: 'Curl your ribs down towards your pelvis by rounding your spine, rather than bending at the hips. Pause and squeeze, then return slowly with control.'},
+  plank: {name: 'Plank / side plank', opts: ['Plank', 'Side Plank'], ev: 'Practical', dose: '3 holds × 20–45 s',
+    how: 'Elbows under shoulders, body in a straight line, ribs down and glutes squeezed. Stop when your hips start to sag or your lower back takes over.'},
+  pallof: {name: 'Pallof press', opts: ['Pallof Press'], ev: 'Practical', dose: '3 sets × 10 reps each side, 2-second hold',
+    how: 'Stand side-on to a cable at chest height, handle at your chest. Press it straight out and hold without letting the cable twist you, then bring it back.'},
+  incline: {name: 'Incline press (30–45°)', opts: ['Incline Chest Press Machine', 'Incline Dumbbell Press'], ev: 'Moderate', dose: '3–4 sets × 8–12 reps',
+    how: 'Bench at 30–45°. Shoulder blades back and down, lower the weight to your upper chest with elbows about 45° from your body, press up and slightly in.'},
+  chestPress: {name: 'Chest press / bench press', opts: ['Chest Press Machine', 'Dumbbell Bench Press'], ev: 'Moderate', dose: '3 sets × 8–12 reps',
+    how: 'Shoulder blades squeezed back, feet planted. Lower until you feel a stretch across your chest, press up without letting your shoulders roll forward.'},
+  pushUp: {name: 'Push-up', opts: ['Push-Up'], ev: 'Strong', dose: '3 sets, close to failure (kneeling or hands on a bench to start)',
+    how: 'Hands a little wider than shoulders, body straight, lower your chest to just above the floor, push back up. Make it harder by raising your feet or adding a backpack.'},
+  fly: {name: 'Pec deck / cable fly', opts: ['Pec Deck', 'Cable Fly'], ev: 'Practical', dose: '3 sets × 12–15 reps',
+    how: 'Slight bend in the elbows, open your arms until you feel a stretch across the chest, then squeeze them together in a wide arc.'},
+});
+Object.assign(ISSUES, {
+  belly_pooch: {name: 'Lower-belly pooch', short: 'Lower stomach sticks out',
+    causes: 'Usually a mix: fat stored low on the belly (very common, especially in women), forward hip tilt pushing the belly out, bloating, and after pregnancy a gap between the ab muscles (diastasis recti). In a 6-week trial, ab exercises alone didn’t reduce belly fat; overall fat loss does.',
+    weak: ['Deep core (transversus abdominis)', 'Rectus abdominis', 'Glutes'], tight: ['Hip flexors'],
+    ex: [
+      {...R.deadBug, why: 'Teaches the deep core to hold the belly in and keep the pelvis level while your limbs move.'},
+      {...R.crunch, why: 'The abs grow like any muscle (an MRI study found Pilates grew them). There’s no separate “lower abs”: different ab exercises grew them the same.'},
+      {...R.legRaise, why: 'Curling the pelvis up trains the abs and the control that counters forward hip tilt.'},
+      {...R.hipThrustTuck, why: 'If forward hip tilt is part of it, strong glutes help keep the pelvis neutral.'},
+    ],
+    stretch: [S.hipFlexorTuck],
+    expect: 'Your core gets firmer within weeks; a flatter look comes mostly from overall fat loss and posture. After pregnancy, exercise narrows the ab gap only slightly (low-certainty evidence), so see a women’s health physio for a check.',
+    src: ['abfat', 'abspot2023', 'absregion', 'pilates', 'dra']},
+  core_weak: {name: 'Weak core / poor stability', short: 'Hard to keep your trunk steady when lifting',
+    causes: 'Your core (abs, obliques, deep core, lower back, glutes) keeps your spine and pelvis steady while you move. It weakens with sitting and rarely gets direct training. It shows up as your lower back taking over, wobbling on single-leg exercises, or your ribs flaring when you press overhead.',
+    weak: ['Deep core', 'Obliques', 'Rectus abdominis', 'Glutes'], tight: ['Hip flexors'],
+    ex: [
+      {...R.deadBug, why: 'The foundation: keeping your back still while arms and legs move.'},
+      {...R.plank, why: 'Builds the endurance to hold your trunk steady from the front and sides.'},
+      {...R.pallof, why: 'Trains your core to resist twisting, which is what it does during most lifts.'},
+      {...R.birdDog, why: 'Back and glutes stabilising the spine together.'},
+    ],
+    stretch: [S.catCow, S.hipFlexorTuck],
+    expect: 'Core endurance improves noticeably within 4–6 weeks. Heavy squats, deadlifts and single-leg work also train the core a lot.',
+    src: ['pilates', 'lbpmeta']},
+  waist: {name: 'Want a smaller-looking waist', short: 'Slimmer waist and love handles',
+    causes: 'Waist size mostly depends on fat (including love handles), your rib cage and pelvis shape, and posture. No ab exercise burns fat from the waist. A smaller-looking waist also comes from proportions: wider shoulders and fuller glutes make the waist look narrower.',
+    weak: ['Glutes', 'Side delts', 'Deep core'], tight: [],
+    ex: [
+      {...R.hipThrust, why: 'Bigger glutes increase the contrast between waist and hips.'},
+      {...R.latRaise, why: 'Wider shoulders make the waist look narrower in comparison.'},
+      {...R.deadBug, why: 'A strong deep core helps you hold your belly in naturally, which changes how the waist looks.'},
+    ],
+    stretch: [],
+    expect: 'The waist itself shrinks with overall fat loss (mostly nutrition). Building shoulders and glutes changes your proportions within a few months. You don’t need heavy weighted side bends or oblique work.',
+    src: ['abfat', 'spotmeta', 'plotkin', 'larsen']},
+  chest_flat: {name: 'Flat chest / want a lifted look', short: 'More shape and fullness at the upper chest',
+    causes: 'Breasts are mostly fat and gland tissue, so their size and shape are set by genetics, body fat, hormones and age. The pec muscles sit underneath. Building them, especially the upper chest, adds some fullness and a firmer base, and better posture lifts how the chest looks. Exercise can’t lift breast tissue itself.',
+    weak: ['Upper chest (clavicular pec)', 'Mid chest', 'Upper back (posture)'], tight: ['Pec minor (if shoulders round forward)'],
+    ex: [
+      {...R.incline, why: 'A 45° incline shifts the work towards the upper chest, and incline training grew the chest most in a 47-person trial.'},
+      {...R.pushUp, why: 'Push-ups built the chest as much as bench press at a matched effort in an 8-week study, with no equipment needed.'},
+      {...R.chestPress, why: 'Your main chest builder for the middle of the chest.'},
+      {...R.fly, why: 'Loads the chest in a stretched position, which helps growth.'},
+    ],
+    stretch: [S.doorway],
+    expect: 'Expect modest fullness from muscle over 3–4 months. Fixing rounded shoulders makes the biggest visual difference quickly (see the Rounded shoulders issue). Breast size changes with body fat.',
+    src: ['pecangle', 'incline2020', 'kikuchi']},
+});
+
+/* ---- Research pass 6: arms, calves + everywhere issues ---- */
+Object.assign(SRC, {
+  maeotri: ['Maeo et al. 2023 — overhead extensions vs pushdowns, triceps growth by MRI', 'https://pubmed.ncbi.nlm.nih.gov/35819335/'],
+  biceps2025: ['Randomised trial 2025 — incline vs preacher curls in 63 women', 'https://pubmed.ncbi.nlm.nih.gov/39809454/'],
+  kinoshita: ['Kinoshita et al. 2023 — standing vs seated calf raises, growth by MRI', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC10753835'],
+  radford: ['Radford et al. 2006 — systematic review: calf stretching and ankle range', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC2465055'],
+  ankle2013: ['Systematic review 2013 — ways to improve ankle bend (dorsiflexion)', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC3668922'],
+});
+Object.assign(R, {
+  inclineCurl: {name: 'Incline dumbbell curl', opts: ['Incline Dumbbell Curl', 'Cable Curl'], ev: 'Strong', dose: '3 sets × 8–15 reps',
+    how: 'Bench at about 45°, arms hanging straight down behind your body. Curl without letting your elbows drift forward, lower all the way to a full stretch.'},
+  preacher: {name: 'Preacher / machine curl', opts: ['Bicep Curl Machine', 'Preacher Curl'], ev: 'Strong', dose: '3 sets × 8–15 reps',
+    how: 'Upper arms flat on the pad. Curl up, then lower slowly until your arms are almost straight. Don’t bounce out of the bottom.'},
+  hammer: {name: 'Hammer curl', opts: ['Hammer Curl'], ev: 'Practical', dose: '2–3 sets × 10–15 reps',
+    how: 'Thumbs facing up, elbows by your sides, curl and lower slowly. Works the muscle under the biceps and the forearm.'},
+  overheadTri: {name: 'Overhead triceps extension', opts: ['Overhead Cable Triceps Extension', 'Overhead Tricep Extension'], ev: 'Strong', dose: '3 sets × 10–15 reps',
+    how: 'Face away from a cable (or hold a dumbbell overhead). Elbows pointing forward and up, lower the weight behind your head for a deep stretch, then straighten your arms.'},
+  pushdown: {name: 'Triceps pushdown', opts: ['Tricep Pushdown'], ev: 'Strong', dose: '3 sets × 10–15 reps',
+    how: 'Elbows pinned to your sides, push the bar or rope down until your arms are straight, squeeze, and let it rise slowly to about chest height.'},
+  dip: {name: 'Assisted dip / bench dip', opts: ['Assisted Dip', 'Bench Dip'], ev: 'Practical', dose: '3 sets × 8–12 reps',
+    how: 'Body upright, lower until your upper arms are about parallel to the floor, press back up. Stop higher if your shoulders feel pinched.'},
+  standingCalf: {name: 'Standing calf raise', opts: ['Standing Calf Raise', 'Single-Leg Calf Raise'], ev: 'Strong', dose: '3–5 sets × 10–15 reps',
+    how: 'Balls of your feet on the edge, knees straight. Lower your heels as far as you can and pause 2 seconds in the stretch, then rise all the way up onto your toes.'},
+  seatedCalf: {name: 'Seated calf raise', opts: ['Seated Calf Raise'], ev: 'Moderate', dose: '3 sets × 12–20 reps',
+    how: 'Knees bent under the pad, lower your heels into a full stretch, pause, then press up as high as you can.'},
+  tibRaise: {name: 'Tibialis raise', opts: ['Tibialis Raise'], ev: 'Practical', dose: '2–3 sets × 15–20 reps',
+    how: 'Lean your back against a wall with your heels about a foot away. Lift your toes up towards your shins as high as you can, lower slowly.'},
+  uniLegs: {name: 'Single-leg versions', opts: ['Bulgarian Split Squat', 'Step-Up', 'Single-Leg Glute Bridge'], ev: 'Practical', dose: 'Same sets and reps on both sides',
+    how: 'Start every set with your weaker side and do the same number of reps on the stronger side (not more). Use dumbbells instead of a barbell so one side can’t take over.'},
+  uniArms: {name: 'Single-arm versions', opts: ['One-Arm Dumbbell Row', 'Lateral Raise', 'Dumbbell Curl'], ev: 'Practical', dose: 'Same sets and reps on both sides',
+    how: 'Weaker arm first, match the reps with the stronger arm. Dumbbells and single-arm cables stop the strong side from doing more of the work.'},
+});
+Object.assign(S, {
+  tricep: {n: 'Overhead triceps stretch', hold: '30 s each arm', how: 'Reach one hand down your upper back, gently push the elbow back with the other hand.'},
+  kneeWall: {n: 'Knee-to-wall ankle stretch', hold: '10 slow reps each side', how: 'Facing a wall, front foot a few cm away. Keeping the heel down, push the knee forward to touch the wall. Move the foot further back as you improve.'},
+});
+Object.assign(ISSUES, {
+  arms_front: {name: 'Underdeveloped biceps / arms', short: 'Arms lack shape at the front',
+    causes: 'Biceps get some work from rows and pulldowns, but usually need direct curls to grow noticeably. Arm muscle grows slowly for many women, so consistency and gradually adding weight or reps matter most.',
+    weak: ['Biceps', 'Brachialis', 'Forearms'], tight: [],
+    ex: [
+      {...R.inclineCurl, why: 'In a 2025 trial of 63 women, incline curls grew the upper part of the biceps more than preacher curls.'},
+      {...R.preacher, why: 'The same trial found preacher curls grew the lower part (near the elbow) more, so do both for the whole muscle.'},
+      {...R.hammer, why: 'Builds the muscle under the biceps and the forearm, adding thickness to the arm.'},
+    ],
+    stretch: [],
+    expect: '6–10 sets a week across 2 sessions; visible change takes about 3–4 months. Focusing on squeezing the muscle helped biceps grow more in one study.',
+    src: ['biceps2025', 'focus']},
+  arms_back: {name: 'Loose back of the arms', short: 'Softness at the back of the upper arms',
+    causes: 'The back of the arm is the triceps (about two-thirds of your upper-arm muscle) plus a common fat-storage area. Building the triceps firms and shapes it; the softness itself reduces with overall fat loss, not arm exercises.',
+    weak: ['Triceps (especially the long head)'], tight: [],
+    ex: [
+      {...R.overheadTri, why: 'In a 12-week MRI study, overhead extensions grew the triceps about 40% more than pushdowns (+19.9% vs +13.9%), even with lighter weights.'},
+      {...R.pushdown, why: 'Still grew the triceps well in the same study (+14%), and is easy to do heavy.'},
+      {...R.dip, why: 'A compound move that loads the triceps heavily together with the chest.'},
+    ],
+    stretch: [S.tricep],
+    expect: 'The arms firm up in about 8–12 weeks. Softness reduces with overall fat loss, which no amount of arm training replaces.',
+    src: ['maeotri', 'spotmeta', 'spotfat']},
+  calves_small: {name: 'Underdeveloped calves', short: 'Lower legs lack shape',
+    causes: 'Calves are stubborn for many people. Genetics (how long the muscle is compared with the tendon) play a big role. They get lots of everyday use, so they need heavy, full-range work to grow.',
+    weak: ['Gastrocnemius (main calf)', 'Soleus (deeper calf)'], tight: [],
+    ex: [
+      {...R.standingCalf, why: 'In a 12-week MRI study, standing calf raises grew the main calf muscle about 9–12%, while seated raises barely grew it (≈1%).'},
+      {...R.seatedCalf, why: 'Grew the deeper soleus as well as standing raises did; good to add for the lower calf.'},
+    ],
+    stretch: [S.calf],
+    expect: 'Calves respond slowly; give it 3–6 months of 2 sessions a week. Genetics set how big they can get.',
+    src: ['kinoshita']},
+  calves_tight: {name: 'Tight calves / stiff ankles', short: 'Heels lift in squats, knees can’t go forward',
+    causes: 'Limited ankle bend (dorsiflexion) from tight calves, a stiff ankle joint, or footwear like heels. It shows up as heels lifting or leaning far forward in squats, and can add to knees caving in.',
+    weak: ['Shins (tibialis anterior)', 'Calves through a full range'], tight: ['Gastrocnemius', 'Soleus'],
+    ex: [
+      {...R.standingCalf, ev: 'Moderate', why: 'Full-range calf raises with a deep, slow stretch at the bottom are eccentric training, which improved flexibility in a systematic review.'},
+      {...R.gobletKnees, why: 'Deep squats with heels down work your ankle range under load.'},
+      {...R.tibRaise, why: 'Strengthens the shin muscles that pull the foot up.'},
+    ],
+    stretch: [S.calf, S.kneeWall],
+    expect: 'Stretching gives small gains on average (about 2–3° in a meta-analysis), so be consistent: daily for 4+ weeks. Meanwhile, small plates under your heels let you squat deeper. After an old ankle sprain, see a physio.',
+    src: ['radford', 'ankle2013', 'ecc2012']},
+  uneven: {name: 'Uneven left vs right', short: 'One side bigger, stronger or higher',
+    causes: 'Small differences are normal; everyone is a bit asymmetrical (dominant hand, how you carry bags, sports). Bigger gaps come from habits, an old injury, or the strong side doing more in two-handed or two-footed exercises.',
+    weak: ['The same muscles on your weaker side'], tight: [],
+    ex: [
+      {...R.uniLegs, why: 'Each leg has to do its own work, so the weaker side can’t hide.'},
+      {...R.uniArms, why: 'Each arm works alone, so you can match the reps exactly.'},
+    ],
+    stretch: [],
+    expect: 'The weaker side usually catches up within 2–3 months. Measure both sides the same way on the Body tab to track it. A big or sudden difference, or weakness with pain or numbness, needs a physio or doctor.',
+    src: []},
+  bulky: {name: 'Too big / bulky', short: 'An area bigger than you’d like',
+    causes: 'First work out whether it’s muscle or fat. Muscle feels firm when you tense it and has grown as you’ve trained. Fat feels soft and changes with your weight. Water retention and bloating can play a part too.',
+    weak: ['Surrounding areas (to balance your proportions)'], tight: ['The over-trained muscle'],
+    ex: [],
+    areaNotes: true,
+    stretch: [],
+    expect: 'If it’s muscle: cut that muscle’s direct work right down. In one study a third of the usual training was enough to keep muscle, so go below that; it shrinks slowly over 2–4 months while you keep training everything else. If it’s fat: it comes off with overall fat loss, not by training that spot.',
+    src: ['maintain', 'spotmeta', 'spotfat']},
+});
+const BULKY_NOTES = {
+  shoulders: ['Shoulder presses, upright rows, front raises and shrugs', 'Glutes and hips, so your shoulders look less dominant'],
+  chest: ['Bench and chest press, push-ups, flys', 'Upper back (rows) for posture'],
+  arms: ['Curls, pushdowns, extensions and dips', 'Legs and glutes; keep compound lifts but skip arm isolation'],
+  core: ['Heavy weighted side bends, weighted crunches and oblique twists', 'Glutes and shoulders, for more waist contrast'],
+  hips: ['Hip abduction machine and side-glute work', 'Shoulders and upper back for balance'],
+  thighs: ['Leg extensions, narrow-stance leg press, front squats, lots of lunges, steep incline walking', 'Glutes (hip thrusts) and hamstrings'],
+  upperback: ['Shrugs, heavy carries, upright rows', 'Lower-trap work (Y-raises) and side delts'],
+  midback: ['Pulldowns, pull-ups and heavy rows (swimming builds the lats too)', 'Glutes and hips'],
+  lowerback: ['Heavy back extensions and good mornings', 'Deep core (dead bugs) and glutes'],
+  glutes: ['Hip thrusts, hip abduction and deep squats', 'Upper body (shoulders, back)'],
+  hamstrings: ['Leg curls and Romanian deadlifts', 'Upper body'],
+  calves: ['Calf raises, lots of jumping, stair machine and uphill running', 'Thighs and glutes for proportion'],
+};
+
+const AREAS_MAP = {
+  front: [
+    ['shoulders', 'Shoulders', [[139, 94, 13, 11], [221, 94, 13, 11]], ['sh_narrow', 'sh_rounded', 'sh_sloped', 'sh_stiff']],
+    ['chest', 'Chest', [[180, 122, 25, 13]], ['chest_flat', 'sh_rounded']],
+    ['arms', 'Arms', [[128, 162, 9, 26], [232, 162, 9, 26]], ['arms_front', 'arms_back']],
+    ['core', 'Waist / core', [[180, 170, 20, 18]], ['belly_pooch', 'core_weak', 'waist', 'apt']],
+    ['hips', 'Hips', [[180, 214, 40, 13]], ['hip_flexors', 'apt', 'ppt', 'lateral_tilt']],
+    ['thighs', 'Thighs', [[160, 282, 15, 32], [200, 282, 15, 32]], ['thigh_bulky', 'knees_cave', 'inner_thigh', 'outer_thigh']],
+  ],
+  back: [
+    ['upperback', 'Neck / upper back', [[180, 98, 28, 12]], ['fhp', 'sh_rounded', 'bra_line']],
+    ['shoulders', 'Shoulders', [[139, 94, 13, 11], [221, 94, 13, 11]], ['sh_sloped', 'sh_rounded', 'sh_narrow', 'sh_stiff']],
+    ['arms', 'Arms (back)', [[128, 162, 9, 26], [232, 162, 9, 26]], ['arms_back', 'arms_front']],
+    ['midback', 'Mid back', [[180, 140, 24, 15]], ['v_taper', 'back_broad', 'bra_line']],
+    ['lowerback', 'Lower back', [[180, 180, 20, 12]], ['lowback_weak', 'apt', 'ppt']],
+    ['glutes', 'Glutes', [[180, 222, 40, 19]], ['glute_flat', 'glute_upper', 'glute_lower', 'glute_hipdips', 'glute_fire', 'apt', 'ppt', 'lateral_tilt']],
+    ['hamstrings', 'Hamstrings', [[160, 292, 14, 27], [200, 292, 14, 27]], ['ham_weak', 'ham_tight']],
+    ['calves', 'Calves', [[157, 365, 10, 22], [203, 365, 10, 22]], ['calves_small', 'calves_tight']],
+  ],
+};
+const EVERYWHERE = ['uneven', 'bulky'];
+state.coach = {side: 'front', area: null, issue: null};
+const areaDef = () => AREAS_MAP[state.coach.side].find(a => a[0] === state.coach.area);
+const watchUrl = n => 'https://www.youtube.com/results?search_query=' + encodeURIComponent(n + ' exercise proper form');
+
+function viewCoach() {
+  const c = state.coach;
+  if (c.issue && ISSUES[c.issue]) return viewIssue(ISSUES[c.issue]);
+  if (c.area && areaDef()) return viewArea(areaDef());
+  const hots = AREAS_MAP[c.side].map(([k, name, ells, list]) => {
+    const live = list.some(x => ISSUES[x]);
+    return `<g class="hot${live ? '' : ' soon'}" data-act="coachArea" data-v="${k}" role="button" aria-label="${esc(name)}">${ells.map(([cx, cy, rx, ry]) => `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}"/>`).join('')}</g>`;
+  }).join('');
+  const backHair = c.side === 'back' ? '<path class="hair" d="M161 37 C160 14 200 14 199 37 C200 52 195 60 180 61 C165 60 160 52 161 37 Z"/>' : '';
+  return `
+  <h1>Coach</h1>
+  <div class="sub">Tap an area to see common issues and what helps, ranked by research.</div>
+  <div class="seg"><button class="${c.side === 'front' ? 'on' : ''}" data-act="coachSide" data-v="front">Front</button><button class="${c.side === 'back' ? 'on' : ''}" data-act="coachSide" data-v="back">Back</button></div>
+  <div class="card"><svg class="figure coach-fig" viewBox="100 0 160 430" role="img" aria-label="Body map">${figureShapes()}${backHair}${hots}</svg></div>
+  <div class="chips">${AREAS_MAP[c.side].map(([k, name, , list]) => `<button class="chip ${list.some(x => ISSUES[x]) ? 'on' : ''}" data-act="coachArea" data-v="${k}">${esc(name)}</button>`).join('')}</div>
+  `;
+}
+function viewArea([, name, , list]) {
+  const rows = [...list, ...EVERYWHERE].map(x => {
+    const iss = ISSUES[x];
+    return iss ? `<button class="issue" data-act="coachIssue" data-v="${x}"><span><b>${esc(iss.name)}</b><br><small>${esc(iss.short)}</small></span><span>›</span></button>`
+      : `<div class="issue soon"><span>${esc(x)}</span><small>Coming soon</small></div>`;
+  }).join('');
+  return `
+  <div class="top"><button class="back" data-act="coachBack">‹ Body map</button></div>
+  <h1>${esc(name)}</h1>
+  <div class="sub">${state.coach.side === 'front' ? 'Front' : 'Back'} · what would you like to work on?</div>
+  ${rows}
+  <p class="note">If something hurts, see a physio. This is general guidance, not medical advice.</p>`;
+}
+function viewIssue(iss) {
+  const area = areaDef();
+  const exs = iss.ex.map((e, i) => `
+    <details class="card ex">
+      <summary><span class="rank">${i + 1}</span><span><b>${esc(e.name)}</b><br><span class="ev ev-${e.ev}">${esc(EV_LABEL[e.ev])}</span><div class="note" style="margin-top:6px">${esc(e.why)}</div></span></summary>
+      <div class="ex-body">
+        <p><b>How:</b> ${esc(e.how)}</p>
+        <p><b>For this goal:</b> ${esc(e.dose)}</p>
+        ${e.opts.map(n => { const x = findEx(n); return `<div class="opt"><span>${esc(n)} ${x ? `<span class="tag t-${esc(x.eq)}">${esc(EQ[x.eq])}</span>` : ''}</span><button data-act="coachAdd" data-n="${esc(n)}">+ Add</button></div>`; }).join('')}
+        <p><a href="${esc(watchUrl(e.opts[0]))}" target="_blank" rel="noopener noreferrer">▶ Watch how (opens video search)</a></p>
+      </div>
+    </details>`).join('');
+  const chips = (arr, cls) => arr.map(m => `<span class="chip ${cls}">${esc(m)}</span>`).join('');
+  return `
+  <div class="top"><button class="back" data-act="coachBack">‹ ${esc(area ? area[1] : 'Back')}</button></div>
+  <h1>${esc(iss.name)}</h1>
+  <div class="card"><b>What’s likely going on</b><p style="margin:8px 0 0">${esc(iss.causes)}</p></div>
+  <h2>Muscles</h2>
+  <div class="card">
+    <div class="note" style="margin-bottom:6px">Likely under-worked / weak</div><div class="chips">${chips(iss.weak, 'weak')}</div>
+    ${iss.tight.length ? `<div class="note" style="margin:12px 0 6px">Likely tight / over-worked</div><div class="chips">${chips(iss.tight, 'tight')}</div>` : ''}
+  </div>
+  ${iss.areaNotes && area && BULKY_NOTES[area[0]] ? `<h2>For your ${esc(area[1].toLowerCase())}</h2>
+  <div class="card"><b>Cut back on</b><p class="note" style="margin:4px 0 12px">${esc(BULKY_NOTES[area[0]][0])}</p>
+  <b>Build instead</b><p class="note" style="margin:4px 0 0">${esc(BULKY_NOTES[area[0]][1])}</p></div>` : ''}
+  ${iss.ex.length ? `<h2>Best exercises, ranked</h2>
+  <p class="note" style="margin-top:-2px">Tap one for how-to, sets and reps, and machine or free-weight options.</p>
+  ${exs}` : ''}
+  <h2>Stretches</h2>
+  ${iss.stretch.length ? iss.stretch.map(s => `<div class="card"><b>${esc(s.n)}</b> <span class="note">· ${esc(s.hold)}</span><p style="margin:6px 0 0" class="note">${esc(s.how)}</p></div>`).join('')
+    : '<div class="card note">No specific stretches needed for this one.</div>'}
+  <h2>What to expect</h2>
+  <div class="card">${esc(iss.expect)}</div>
+  <h2>Sources</h2>
+  ${iss.src.length ? '' : '<p class="note">Based on standard coaching practice; no specific studies.</p>'}
+  <ul class="src">${iss.src.map(k => `<li><a href="${esc(SRC[k][1])}" target="_blank" rel="noopener noreferrer">${esc(SRC[k][0])}</a></li>`).join('')}</ul>
+  <p class="note">General guidance, not medical advice. If something hurts, see a physio.</p>`;
+}
+function coachAdd(name, btn) {
+  const ex = findEx(name); if (!ex) return;
+  if (!draftHasContent()) draft = newDraft();
+  if (draft.entries.some(e => e.type === 'strength' && e.name === ex.n)) { toast('Already in your workout'); return; }
+  const last = lastFor(ex.n, draft.editing ? draft.id : null);
+  draft.entries.push({type: 'strength', name: ex.n, eq: ex.eq, time: ex.time, sets: Array.from({length: Math.max(1, last ? last.sets.length : 3)}, () => ({kg: '', reps: ''}))});
+  saveDraft();
+  btn.textContent = 'Added ✓'; btn.disabled = true;
+  toast('Added: tap + Log / Continue on History');
+}
+
 /* ---- Settings ---- */
 function viewSettings() {
   const n = db.workouts.length;
@@ -881,6 +1654,11 @@ document.addEventListener('click', ev => {
       if (!draftHasContent()) { draft = newDraft(); saveDraft(); }
       state.screen = 'log'; render(); break;
     case 'bodyLog': startMeasure(null); break;
+    case 'coachSide': state.coach = {side: el.dataset.v, area: null, issue: null}; render(); break;
+    case 'coachArea': state.coach.area = el.dataset.v; state.coach.issue = null; render(); window.scrollTo(0, 0); break;
+    case 'coachIssue': state.coach.issue = el.dataset.v; render(); window.scrollTo(0, 0); break;
+    case 'coachBack': if (state.coach.issue) state.coach.issue = null; else state.coach.area = null; render(); window.scrollTo(0, 0); break;
+    case 'coachAdd': coachAdd(el.dataset.n, el); break;
     case 'saveMeasure': saveMeasure(); break;
     case 'addMeasure': {
       const at = draft.entries.findIndex(e => e.type === 'measure');
