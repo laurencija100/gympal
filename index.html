@@ -16,7 +16,7 @@
 <style>
 :root{
   --bg:#0f1115; --card:#1a1d24; --card2:#22262f; --line:#2c313b; --text:#eceef1; --muted:#9aa1ac;
-  --accent:#ff6b8b; --accent-ink:#2a0a12; --cardio:#2ec4b6; --danger:#ff5d5d;
+  --accent:#ff6b8b; --accent-ink:#2a0a12; --cardio:#2ec4b6; --measure:#ffd166; --danger:#ff5d5d;
   --machine:#8b7bff; --cable:#4fa3ff; --dumbbell:#ffb547; --barbell:#ff7a59; --bodyweight:#56d27a;
   --r:14px;
 }
@@ -65,7 +65,21 @@ label.f>input,label.f>select,label.f>textarea{margin-top:4px}
 .day.future{color:#5b616b}
 .dots{display:flex;gap:3px;height:6px;margin-top:3px}
 .dot{width:6px;height:6px;border-radius:50%}
-.dot.s{background:var(--accent)}.dot.c{background:var(--cardio)}
+.dot.s{background:var(--accent)}.dot.c{background:var(--cardio)}.dot.m{background:var(--measure)}
+/* body tab */
+.figure{width:100%;height:auto;display:block}
+.figure .limb{stroke:#353b47;stroke-linecap:round;fill:none}
+.figure .torso,.figure .head{fill:#353b47}
+.figure .lead{stroke:var(--muted);stroke-width:1;opacity:.6}
+.figure .pt{fill:var(--accent)}
+.figure .ln{fill:var(--muted);font-size:11px}
+.figure .lv{fill:var(--text);font-size:15px;font-weight:700}
+.figure .ld{fill:var(--muted);font-size:11px;font-weight:500}
+.mtable{width:100%;border-collapse:collapse;font-size:14px}
+.mtable th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600;text-align:right;padding:4px 0 8px}
+.mtable th:first-child,.mtable td:first-child{text-align:left}
+.mtable td{text-align:right;padding:9px 0;border-top:1px solid var(--line)}
+.mtable td.d{color:var(--muted)}
 .legend{display:flex;gap:14px;font-size:12px;color:var(--muted);margin-top:10px}
 .legend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
 
@@ -89,9 +103,9 @@ label.f>input,label.f>select,label.f>textarea{margin-top:4px}
 .add-set{width:100%;margin-top:4px;padding:9px;font-size:15px;color:var(--muted)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .pace{font-size:14px;color:var(--cardio);min-height:20px;font-weight:600}
-.add-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
-.add-row button{padding:14px;font-weight:600}
-.add-row .a-s{color:var(--accent)}.add-row .a-c{color:var(--cardio)}
+.add-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0}
+.add-row button{padding:14px 4px;font-weight:600}
+.add-row .a-s{color:var(--accent)}.add-row .a-c{color:var(--cardio)}.add-row .a-m{color:var(--measure)}
 
 /* detail */
 .top{display:flex;align-items:center;justify-content:space-between;min-height:44px}
@@ -129,8 +143,8 @@ nav .badge{position:absolute;top:4px;left:calc(50% + 8px);width:8px;height:8px;b
 <nav id="nav">
   <button data-act="tab" data-tab="history">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>History</button>
-  <button data-act="tab" data-tab="log">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Log</button>
+  <button data-act="tab" data-tab="body">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4.5" r="2.2"/><path d="M5 8.5c4.5 1.2 9.5 1.2 14 0M12 9.5v5.5M12 15l-3 6.5M12 15l3 6.5"/></svg>Body</button>
   <button data-act="tab" data-tab="settings">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Settings</button>
 </nav>
@@ -220,7 +234,7 @@ const LIB = [
 // unit = distance unit, pace = how speed is shown
 const CARDIO = {
   run_out:   {n:'Outdoor run',     em:'🏃', unit:'km', pace:'km'},
-  treadmill: {n:'Treadmill run',   em:'🏃', unit:'km', pace:'km'},
+  treadmill: {n:'Treadmill run',   em:'🏃', unit:'km', pace:'km', speed:true, incline:true},
   cycle_out: {n:'Outdoor ride',    em:'🚴', unit:'km', pace:'kmh'},
   cycle_in:  {n:'Indoor cycling',  em:'🚲', unit:'km', pace:'kmh'},
   swim_pool: {n:'Pool swim',       em:'🏊', unit:'m',  pace:'100m'},
@@ -288,15 +302,27 @@ function summarizeSets(sets, time) {
   if (same) { const s = sets[0]; return `${sets.length} × ${s.reps ?? '?'}${u}${s.kg != null ? ` @ ${fmtN(s.kg)} kg` : ''}`; }
   return sets.map(s => (s.kg != null ? fmtN(s.kg) + ' kg × ' : '') + (s.reps ?? '?') + u).join(', ');
 }
-function paceText(act, min, sec, dist) {
-  const t = (num(min) || 0) * 60 + (num(sec) || 0), d = num(dist), a = CARDIO[act];
-  if (!t || !d || !a || !a.pace) return '';
-  if (a.pace === 'km') return `Pace ${fmtClock(t / d)} /km`;
-  if (a.pace === 'kmh') return `Avg ${(d / (t / 3600)).toFixed(1)} km/h`;
-  if (a.pace === '100m') return `Pace ${fmtClock(t / (d / 100))} /100 m`;
-  if (a.pace === '500m') return `Split ${fmtClock(t / (d / 500))} /500 m`;
-  return '';
+// Works out whatever is missing from time / distance / pace / speed.
+function cardioCalc(e) {
+  const a = CARDIO[e.act] || CARDIO.other, d = num(e.dist), v = num(e.speed);
+  const dk = d == null ? null : (a.unit === 'm' ? d / 1000 : d);
+  const p = (num(e.paceMin) || 0) * 60 + (num(e.paceSec) || 0);
+  const tEntered = (num(e.min) || 0) * 60 + (num(e.sec) || 0);
+  let t = tEntered;
+  if (!t && dk) t = p ? p * dk : v ? dk / v * 3600 : 0;
+  return {a, t: Math.round(t), tEntered, d, dk, p, v};
 }
+function paceText(e) {
+  const {a, t, tEntered, d, dk, p, v} = cardioCalc(e), out = [];
+  if (a.pace === 'km') { const pp = p || (t && dk ? t / dk : 0) || (v ? 3600 / v : 0); if (pp) out.push(`Pace ${fmtClock(pp)} /km`); }
+  if (a.pace === 'kmh' || a.speed) { const vv = v || (t && dk ? dk / (t / 3600) : 0) || (p ? 3600 / p : 0); if (vv) out.push(`${fmtN(Math.round(vv * 10) / 10)} km/h`); }
+  if (a.pace === '100m' && t && d) out.push(`Pace ${fmtClock(t / (d / 100))} /100 m`);
+  if (a.pace === '500m' && t && d) out.push(`Split ${fmtClock(t / (d / 500))} /500 m`);
+  if (num(e.incline)) out.push(`Incline ${fmtN(num(e.incline))}%`);
+  if (!tEntered && t) out.push(`≈ ${fmtDur(t)} total`);
+  return out.join(' · ');
+}
+const EFFORT = ['', 'very easy', 'very easy', 'easy', 'easy', 'moderate', 'moderate', 'hard', 'hard', 'very hard', 'all-out'];
 function cardioLine(e) {
   const a = CARDIO[e.act] || CARDIO.other, parts = [];
   const t = (e.min || 0) * 60 + (e.sec || 0);
@@ -304,15 +330,44 @@ function cardioLine(e) {
   if (t) parts.push(fmtDur(t));
   return parts.join(' · ');
 }
+/* ---- Measurements ---- */
+const MEAS = [
+  ['weight', 'Weight', 'kg'], ['bodyFat', 'Body fat', '%'],
+  ['shoulders', 'Shoulders', 'cm'], ['chest', 'Chest / bust', 'cm'], ['waist', 'Waist', 'cm'],
+  ['hips', 'Hips / glutes', 'cm'], ['thigh', 'Thigh', 'cm'], ['arm', 'Upper arm', 'cm'], ['calf', 'Calf', 'cm'],
+];
+const MEAS_BLANK = () => Object.fromEntries([['type', 'measure'], ...MEAS.map(([k]) => [k, ''])]);
+const isTraining = w => w.entries.some(e => e.type !== 'measure');
+function cleanMeasure(e) {
+  const m = {type: 'measure'};
+  for (const [k] of MEAS) { const v = num(e[k]); m[k] = v != null && v > 0 && v < 1000 ? v : null; }
+  return m;
+}
+// Oldest → newest values of one measurement, optionally skipping one workout (the one being edited)
+function measHistory(key, excludeId) {
+  const out = [];
+  for (const w of sorted().reverse()) {
+    if (w.id === excludeId) continue;
+    for (const e of w.entries) if (e.type === 'measure' && e[key] != null) out.push({date: w.date, v: e[key]});
+  }
+  return out;
+}
+const fmtDelta = d => Math.abs(d) < 0.05 ? '±0' : (d > 0 ? '+' : '−') + fmtN(Math.abs(Math.round(d * 10) / 10));
+function measSummary(e) {
+  return MEAS.filter(([k]) => e[k] != null && e[k] !== '').map(([k, n, u]) => `${n} ${fmtN(num(e[k]))} ${u}`).join(', ');
+}
+
 function workoutTitle(w) {
   if (w.title) return w.title;
+  if (!isTraining(w)) return 'Measurements';
   const s = w.entries.filter(e => e.type === 'strength').length, c = w.entries.filter(e => e.type === 'cardio');
   if (!s && c.length) return [...new Set(c.map(e => (CARDIO[e.act] || CARDIO.other).n))].join(' + ');
   if (s && !c.length) return `Weights · ${s} exercise${s > 1 ? 's' : ''}`;
   return 'Weights + cardio';
 }
 function workoutSummary(w) {
-  return w.entries.map(e => e.type === 'strength' ? e.name : `${(CARDIO[e.act]||CARDIO.other).em} ${cardioLine(e) || (CARDIO[e.act]||CARDIO.other).n}`).join(' · ');
+  return w.entries.map(e => e.type === 'strength' ? e.name : e.type === 'measure' ? `📏 ${measSummary(e)}`
+    : `${(CARDIO[e.act]||CARDIO.other).em} ${cardioLine(e) || (CARDIO[e.act]||CARDIO.other).n}`).join(' · ');
 }
 
 /* ---------------- State & rendering ---------------- */
@@ -323,13 +378,9 @@ let lastScreen = null;
 
 function render() {
   const s = state.screen;
-  app.innerHTML = s === 'history' ? viewHistory() : s === 'detail' ? viewDetail() : s === 'log' ? viewLog() : viewSettings();
-  const tab = s === 'detail' ? 'history' : s;
-  document.querySelectorAll('nav button').forEach(b => {
-    b.classList.toggle('on', b.dataset.tab === tab);
-    b.querySelector('.badge')?.remove();
-    if (b.dataset.tab === 'log' && draft && s !== 'log') b.insertAdjacentHTML('beforeend', '<span class="badge"></span>');
-  });
+  app.innerHTML = s === 'history' ? viewHistory() : s === 'detail' ? viewDetail() : s === 'log' ? viewLog() : s === 'body' ? viewBody() : viewSettings();
+  const tab = s === 'detail' || s === 'log' ? 'history' : s;
+  document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
   if (s !== lastScreen) window.scrollTo(0, 0);
   lastScreen = s;
 }
@@ -339,9 +390,10 @@ function viewHistory() {
   const ws = sorted();
   const t = new Date(); t.setHours(0,0,0,0);
   const monday = new Date(t); monday.setDate(t.getDate() - (t.getDay() + 6) % 7);
-  const weekCount = ws.filter(w => parseD(w.date) >= monday && parseD(w.date) <= t).length;
+  const trained = ws.filter(isTraining);
+  const weekCount = trained.filter(w => parseD(w.date) >= monday && parseD(w.date) <= t).length;
   const monthKey = dstr(t).slice(0, 7);
-  const monthWs = ws.filter(w => w.date.startsWith(monthKey));
+  const monthWs = trained.filter(w => w.date.startsWith(monthKey));
   const cardioKm = monthWs.flatMap(w => w.entries).filter(e => e.type === 'cardio' && e.dist)
     .reduce((sum, e) => sum + ((CARDIO[e.act]||{}).unit === 'm' ? e.dist / 1000 : e.dist), 0);
 
@@ -352,6 +404,9 @@ function viewHistory() {
 
   return `
   <h1>Workouts</h1>
+  ${draftHasContent()
+    ? `<button class="btn-primary" style="margin-top:10px" data-act="newLog">▶ Continue unsaved ${draft.editing ? 'edit' : 'workout'} (${draft.entries.length} item${draft.entries.length === 1 ? '' : 's'})</button>`
+    : `<button class="btn-primary" style="margin-top:10px" data-act="newLog">+ Log workout or measurements</button>`}
   <div class="stats">
     <div class="stat"><b>${weekCount}</b><span>This week</span></div>
     <div class="stat"><b>${monthWs.length}</b><span>This month</span></div>
@@ -361,26 +416,26 @@ function viewHistory() {
   <h2>${esc(listTitle)}</h2>
   ${list.length ? list.map(woCard).join('') : `<div class="empty">${state.selDay ? 'Nothing logged this day.' : 'No workouts this month yet.'}</div>`}
   ${state.selDay && state.selDay <= today() ? `<button class="btn-wide" data-act="newOn" data-date="${state.selDay}">+ Log a workout on ${esc(fmtDate(state.selDay, {day:'numeric', month:'short'}))}</button>` : ''}
-  ${!ws.length ? `<div class="card note">👋 Tap <b>Log</b> below to record your first workout. Tip: add this page to your Home Screen (Share → Add to Home Screen) so it opens like an app and your data stays safe.</div>` : ''}`;
+  ${!ws.length ? `<div class="card note">👋 Tap <b>+ Log</b> above to record your first workout. Tip: add this page to your Home Screen (Share → Add to Home Screen) so it opens like an app and your data stays safe.</div>` : ''}`;
 }
 function calendar(ws) {
   const m = state.month, y = m.getFullYear(), mo = m.getMonth();
   const offset = (new Date(y, mo, 1).getDay() + 6) % 7, days = new Date(y, mo + 1, 0).getDate();
   const marks = {};
-  for (const w of ws) { const k = marks[w.date] ||= {s: false, c: false}; for (const e of w.entries) e.type === 'strength' ? k.s = true : k.c = true; }
+  for (const w of ws) { const k = marks[w.date] ||= {}; for (const e of w.entries) k[e.type[0]] = true; }
   const td = today();
   let cells = ['M','T','W','T','F','S','S'].map(d => `<div class="dow">${d}</div>`).join('');
   cells += '<div></div>'.repeat(offset);
   for (let d = 1; d <= days; d++) {
     const ds = `${y}-${pad(mo+1)}-${pad(d)}`, k = marks[ds];
     const cls = ['day', k && 'has', ds === td && 'today', ds === state.selDay && 'sel', ds > td && 'future'].filter(Boolean).join(' ');
-    cells += `<button class="${cls}" data-act="day" data-date="${ds}">${d}<span class="dots">${k?.s ? '<i class="dot s"></i>' : ''}${k?.c ? '<i class="dot c"></i>' : ''}</span></button>`;
+    cells += `<button class="${cls}" data-act="day" data-date="${ds}">${d}<span class="dots">${k?.s ? '<i class="dot s"></i>' : ''}${k?.c ? '<i class="dot c"></i>' : ''}${k?.m ? '<i class="dot m"></i>' : ''}</span></button>`;
   }
   return `<div class="cal-h"><button class="icon-btn" data-act="month" data-d="-1" aria-label="Previous month">‹</button>
     <b>${m.toLocaleDateString('en-GB', {month:'long', year:'numeric'})}</b>
     <button class="icon-btn" data-act="month" data-d="1" aria-label="Next month">›</button></div>
     <div class="cal">${cells}</div>
-    <div class="legend"><span><i style="background:var(--accent)"></i>Weights</span><span><i style="background:var(--cardio)"></i>Cardio</span></div>`;
+    <div class="legend"><span><i style="background:var(--accent)"></i>Weights</span><span><i style="background:var(--cardio)"></i>Cardio</span><span><i style="background:var(--measure)"></i>Measured</span></div>`;
 }
 function woCard(w) {
   return `<button class="wo" data-act="open" data-id="${esc(w.id)}">
@@ -399,10 +454,12 @@ function viewDetail() {
         <div class="d-sets">${e.sets.map((s, i) => `Set ${i+1}: ${s.kg != null ? fmtN(s.kg) + ' kg × ' : ''}${esc(s.reps ?? '?')}${e.time ? ' s' : ' reps'}`).join('<br>')}</div>
         ${vol ? `<div class="note" style="margin-top:4px">Volume ${fmtN(vol)} kg</div>` : ''}</div>`;
     }
+    if (e.type === 'measure') return `<div class="d-entry"><div><b>📏 Measurements</b></div>
+      <div class="d-sets">${MEAS.filter(([k]) => e[k] != null).map(([k, n, u]) => `${n}: ${esc(fmtN(e[k]))} ${u}`).join('<br>')}</div></div>`;
     const a = CARDIO[e.act] || CARDIO.other;
-    const pace = paceText(e.act, e.min, e.sec, e.dist);
+    const pace = paceText(e);
     return `<div class="d-entry"><div><b>${a.em} ${esc(a.n)}</b> <span class="tag t-cardio">${OUTDOOR.has(e.act) ? 'Outdoor' : 'Indoor'}</span></div>
-      <div class="d-sets">${esc(cardioLine(e) || '—')}${pace ? `<br>${esc(pace)}` : ''}${e.effort ? `<br>Effort ${e.effort}/10` : ''}</div></div>`;
+      <div class="d-sets">${esc(cardioLine(e) || '—')}${pace ? `<br>${esc(pace)}` : ''}${num(e.effort) ? `<br>Effort ${esc(e.effort)}/10 (${esc(EFFORT[num(e.effort)] || '')})` : ''}</div></div>`;
   }).join('');
   return `
   <div class="top"><button class="back" data-act="tab" data-tab="history">‹ History</button></div>
@@ -423,6 +480,7 @@ function viewLog() {
   const d = draft;
   const quick = ['Full body', 'Upper body', 'Lower body', 'Glutes & legs', 'Cardio'];
   return `
+  <div class="top"><button class="back" data-act="tab" data-tab="history">‹ History</button><span class="note">Saved as you type</span></div>
   <h1>${d.editing ? 'Edit workout' : 'Log workout'}</h1>
   <div class="card">
     <label class="f">Date<input type="date" data-f="date" value="${esc(d.date)}" max="${today()}"></label>
@@ -431,23 +489,39 @@ function viewLog() {
   </div>
   <div id="entries">${d.entries.map(entryEditor).join('')}</div>
   ${!d.entries.length ? '<div class="empty">Add the exercises or cardio you did.</div>' : ''}
-  <div class="add-row"><button class="a-s" data-act="pickEx">+ Exercise</button><button class="a-c" data-act="pickCardio">+ Cardio</button></div>
+  <div class="add-row"><button class="a-s" data-act="pickEx">+ Weights</button><button class="a-c" data-act="pickCardio">+ Cardio</button><button class="a-m" data-act="addMeasure">+ Measure</button></div>
   <label class="f">Notes<textarea data-f="notes" placeholder="How did it feel? Anything to remember next time?">${esc(d.notes)}</textarea></label>
   <button class="btn-primary" data-act="save">${d.editing ? 'Save changes' : 'Save workout'}</button>
   <button class="btn-ghost btn-wide" style="margin-top:6px" data-act="discard">${d.editing ? 'Cancel editing' : 'Discard'}</button>`;
 }
 function entryEditor(e, i) {
+  if (e.type === 'measure') {
+    const ex = draft.editing ? draft.id : null;
+    return `<div class="card entry" id="entry-${i}">
+      <div class="entry-h"><div class="entry-name">📏 Measurements</div><button class="icon-btn" data-act="rmEntry" data-i="${i}" aria-label="Remove">✕</button></div>
+      <div class="note" style="margin:6px 0 10px">Fill in any you measured. Grey numbers are your last values. Tip: measure at the same time of day, tape snug but not tight.</div>
+      <div class="grid2">${MEAS.map(([k, n, u]) => {
+        const last = measHistory(k, ex).at(-1);
+        return `<label class="f">${n} (${u})<input type="text" inputmode="decimal" data-c="${k}" data-i="${i}" value="${esc(e[k] ?? '')}" placeholder="${last ? esc(fmtN(last.v)) : ''}"></label>`;
+      }).join('')}</div>
+    </div>`;
+  }
   if (e.type === 'cardio') {
     const a = CARDIO[e.act] || CARDIO.other;
     return `<div class="card entry" id="entry-${i}">
       <div class="entry-h"><div class="entry-name">${a.em} ${esc(a.n)}</div><button class="icon-btn" data-act="rmEntry" data-i="${i}" aria-label="Remove">✕</button></div>
-      <div class="grid2" style="margin-top:10px">
-        <label class="f">Minutes<input type="text" inputmode="numeric" data-c="min" data-i="${i}" value="${esc(e.min ?? '')}" placeholder="0"></label>
-        <label class="f">Seconds<input type="text" inputmode="numeric" data-c="sec" data-i="${i}" value="${esc(e.sec ?? '')}" placeholder="0"></label>
+      <div class="note" style="margin:6px 0 10px">Fill in what you have; the rest is worked out.</div>
+      <div class="grid2">
+        <label class="f">Time: minutes<input type="text" inputmode="numeric" data-c="min" data-i="${i}" value="${esc(e.min ?? '')}" placeholder="0"></label>
+        <label class="f">Time: seconds<input type="text" inputmode="numeric" data-c="sec" data-i="${i}" value="${esc(e.sec ?? '')}" placeholder="0"></label>
         ${a.unit ? `<label class="f">Distance (${a.unit})<input type="text" inputmode="decimal" data-c="dist" data-i="${i}" value="${esc(e.dist ?? '')}" placeholder="${a.unit === 'm' ? 'e.g. 1000' : 'e.g. 5.2'}"></label>` : ''}
-        <label class="f">Effort<select data-c="effort" data-i="${i}"><option value="">–</option>${[1,2,3,4,5,6,7,8,9,10].map(n => `<option ${String(e.effort) === String(n) ? 'selected' : ''}>${n}</option>`).join('')}</select></label>
+        ${a.speed ? `<label class="f">Speed (km/h)<input type="text" inputmode="decimal" data-c="speed" data-i="${i}" value="${esc(e.speed ?? '')}" placeholder="e.g. 10.5"></label>` : ''}
+        ${a.pace === 'km' ? `<label class="f">Avg pace: min /km<input type="text" inputmode="numeric" data-c="paceMin" data-i="${i}" value="${esc(e.paceMin ?? '')}" placeholder="e.g. 5"></label>
+        <label class="f">Avg pace: sec<input type="text" inputmode="numeric" data-c="paceSec" data-i="${i}" value="${esc(e.paceSec ?? '')}" placeholder="e.g. 30"></label>` : ''}
+        ${a.incline ? `<label class="f">Incline (%)<input type="text" inputmode="decimal" data-c="incline" data-i="${i}" value="${esc(e.incline ?? '')}" placeholder="e.g. 1"></label>` : ''}
       </div>
-      <div class="pace" id="pace-${i}">${esc(paceText(e.act, e.min, e.sec, e.dist))}</div>
+      <label class="f">Effort: how hard it felt<select data-c="effort" data-i="${i}"><option value="">–</option>${[1,2,3,4,5,6,7,8,9,10].map(n => `<option value="${n}" ${String(e.effort) === String(n) ? 'selected' : ''}>${n} – ${EFFORT[n]}</option>`).join('')}</select></label>
+      <div class="pace" id="pace-${i}">${esc(paceText(e))}</div>
     </div>`;
   }
   const last = lastFor(e.name, draft.editing ? draft.id : null);
@@ -473,7 +547,15 @@ function addExercise(ex) {
   draft.entries.push({type: 'strength', name: ex.n, eq: ex.eq, time: ex.time, sets: Array.from({length: n}, () => ({kg: '', reps: ''}))});
   afterAdd();
 }
-function addCardio(act) { draft.entries.push({type: 'cardio', act, min: '', sec: '', dist: '', effort: ''}); afterAdd(); }
+const CARDIO_BLANK = {min: '', sec: '', dist: '', effort: '', paceMin: '', paceSec: '', speed: '', incline: ''};
+function addCardio(act) { draft.entries.push({type: 'cardio', act, ...CARDIO_BLANK}); afterAdd(); }
+function cleanCardio(e) {
+  const f = ['min', 'sec', 'dist', 'effort', 'paceMin', 'paceSec', 'speed', 'incline'];
+  const c = {type: 'cardio', act: Object.hasOwn(CARDIO, e.act) ? e.act : 'other'};
+  for (const k of f) c[k] = num(e[k]);
+  if (!c.min && !c.sec) { const {t} = cardioCalc(c); if (t) { c.min = Math.floor(t / 60); c.sec = t % 60; } }
+  return c;
+}
 function afterAdd() {
   saveDraft(); closeSheet(); render();
   const el = document.getElementById(`entry-${draft.entries.length - 1}`);
@@ -487,9 +569,12 @@ function commitDraft() {
     if (e.type === 'strength') {
       const sets = e.sets.map(s => ({kg: num(s.kg), reps: num(s.reps)})).filter(s => s.kg != null || s.reps != null);
       if (sets.length) entries.push({type: 'strength', name: e.name, eq: e.eq, time: !!e.time, sets});
+    } else if (e.type === 'measure') {
+      const m = cleanMeasure(e);
+      if (MEAS.some(([k]) => m[k] != null)) entries.push(m);
     } else {
-      const c = {type: 'cardio', act: e.act, min: num(e.min), sec: num(e.sec), dist: num(e.dist), effort: num(e.effort)};
-      if (c.min || c.sec || c.dist) entries.push(c);
+      const c = cleanCardio(e);
+      if (c.min || c.sec || c.dist || c.paceMin || c.speed) entries.push(c);
     }
   }
   if (!entries.length) return toast('Fill in at least one set or cardio time');
@@ -507,7 +592,8 @@ function startDraftFrom(w, asNew) {
   if (draftHasContent() && !confirm('You have an unsaved workout in progress. Replace it?')) return;
   const d = clone(w);
   if (asNew) { d.id = uid(); d.date = today(); d.editing = false;
-    d.entries.forEach(e => { if (e.type === 'strength') e.sets = e.sets.map(() => ({kg: '', reps: ''})); else Object.assign(e, {min: '', sec: '', dist: '', effort: ''}); });
+    d.entries = d.entries.filter(e => e.type !== 'measure');
+    d.entries.forEach(e => { if (e.type === 'strength') e.sets = e.sets.map(() => ({kg: '', reps: ''})); else Object.assign(e, CARDIO_BLANK); });
     d.notes = '';
   } else d.editing = true;
   delete d.created; delete d.updated;
@@ -561,6 +647,59 @@ function openCardioPicker() {
     <h2>Indoor</h2><div class="cardio-grid">${entries.filter(([k]) => !OUTDOOR.has(k)).map(btn).join('')}</div>`);
 }
 
+/* ---- Body ---- */
+// Where each measurement's label sits (side, label y) and the point on the figure it points to
+const BODY_LABELS = {
+  chest: ['L', 118, 157, 120], waist: ['L', 178, 154, 172], hips: ['L', 238, 141, 222], thigh: ['L', 300, 158, 292],
+  shoulders: ['R', 84, 219, 86], arm: ['R', 158, 236, 150], calf: ['R', 372, 205, 372],
+};
+function bodyFigure(h) {
+  let labels = '';
+  for (const [k, [side, ly, px, py]] of Object.entries(BODY_LABELS)) {
+    const [, name, unit] = MEAS.find(m => m[0] === k), arr = h[k], last = arr.at(-1);
+    const delta = arr.length > 1 ? fmtDelta(last.v - arr.at(-2).v) : '';
+    const L = side === 'L', tx = L ? 6 : 354, lx = L ? 100 : 262, anchor = L ? 'start' : 'end';
+    labels += `<line class="lead" x1="${lx}" y1="${ly}" x2="${px}" y2="${py}"/><circle class="pt" cx="${px}" cy="${py}" r="3"/>
+      <text x="${tx}" y="${ly - 5}" text-anchor="${anchor}" class="ln">${esc(name)}</text>
+      <text x="${tx}" y="${ly + 13}" text-anchor="${anchor}" class="lv">${last ? esc(fmtN(last.v)) + ` <tspan class="ld">${unit}${delta ? ' ' + esc(delta) : ''}</tspan>` : '<tspan class="ld">—</tspan>'}</text>`;
+  }
+  return `<svg class="figure" viewBox="0 0 360 430" role="img" aria-label="Body outline with your latest measurements">
+    <circle class="head" cx="180" cy="40" r="20"/>
+    <path class="limb" stroke-width="14" d="M180 56 V76"/>
+    <path class="torso" d="M144 80 Q180 72 216 80 L224 90 Q222 130 208 170 Q226 196 224 236 L136 236 Q134 196 152 170 Q138 130 136 90 Z"/>
+    <path class="limb" stroke-width="16" d="M136 92 L124 168 L118 246"/>
+    <path class="limb" stroke-width="16" d="M224 92 L236 168 L242 246"/>
+    <path class="limb" stroke-width="30" d="M161 230 L157 322 L155 410"/>
+    <path class="limb" stroke-width="30" d="M199 230 L203 322 L205 410"/>
+    ${labels}</svg>`;
+}
+function viewBody() {
+  const h = Object.fromEntries(MEAS.map(([k]) => [k, measHistory(k)]));
+  const any = MEAS.some(([k]) => h[k].length);
+  const lastDate = MEAS.map(([k]) => h[k].at(-1)?.date).filter(Boolean).sort().at(-1);
+  const stat = k => {
+    const [, name, unit] = MEAS.find(m => m[0] === k), a = h[k], l = a.at(-1);
+    return `<div class="stat"><b>${l ? esc(fmtN(l.v)) + ` <small style="font-size:13px;color:var(--muted)">${unit}</small>` : '—'}</b>
+      <span>${name}${a.length > 1 ? ` · ${esc(fmtDelta(l.v - a.at(-2).v))} since last` : ''}</span></div>`;
+  };
+  const rows = MEAS.filter(([k]) => h[k].length).map(([k, n, u]) => {
+    const a = h[k], l = a.at(-1);
+    return `<tr><td>${n}</td><td><b>${esc(fmtN(l.v))}</b> ${u}</td>
+      <td class="d">${a.length > 1 ? esc(fmtDelta(l.v - a.at(-2).v)) : '–'}</td>
+      <td class="d">${a.length > 1 ? esc(fmtDelta(l.v - a[0].v)) : '–'}</td></tr>`;
+  }).join('');
+  return `
+  <h1>Body</h1>
+  <div class="sub">${lastDate ? `Last measured ${esc(fmtDate(lastDate, {weekday:'short', day:'numeric', month:'short', year:'numeric'}))}` : 'No measurements yet'}</div>
+  <button class="btn-primary" style="margin-top:12px" data-act="bodyLog">📏 Log measurements</button>
+  <div class="stats" style="grid-template-columns:1fr 1fr">${stat('weight')}${stat('bodyFat')}</div>
+  <div class="card">${bodyFigure(h)}</div>
+  ${any ? `<h2>Changes</h2><div class="card"><table class="mtable">
+      <tr><th>Measurement</th><th>Latest</th><th>Since last</th><th>Since first</th></tr>${rows}</table></div>`
+    : `<div class="card note">Log your weight and measurements to see them on the body above and track changes over time. Measuring every 2–4 weeks is plenty; tape measurements change slowly.</div>`}
+  <p class="note" style="text-align:center">Coming next: tap a body area for exercise ideas.</p>`;
+}
+
 /* ---- Settings ---- */
 function viewSettings() {
   const n = db.workouts.length;
@@ -601,8 +740,8 @@ function cleanWorkout(w) {
     if (e && e.type === 'strength' && str(e.name, 80).trim()) return {
       type: 'strength', name: str(e.name, 80).trim(), eq: EQ[e.eq] ? e.eq : null, time: e.time === true,
       sets: (Array.isArray(e.sets) ? e.sets : []).slice(0, 50).map(s => ({kg: num(s && s.kg), reps: num(s && s.reps)}))};
-    if (e && e.type === 'cardio') return {
-      type: 'cardio', act: Object.hasOwn(CARDIO, e.act) ? e.act : 'other', min: num(e.min), sec: num(e.sec), dist: num(e.dist), effort: num(e.effort)};
+    if (e && e.type === 'cardio') return cleanCardio(e);
+    if (e && e.type === 'measure') return cleanMeasure(e);
     return null;
   }).filter(Boolean);
   return {id, date, title: str(w.title, 80), notes: str(w.notes, 5000), entries, created: num(w.created) || Date.now(), updated: num(w.updated) || Date.now()};
@@ -649,6 +788,17 @@ document.addEventListener('click', ev => {
     case 'quickTitle': draft.title = draft.title === el.dataset.v ? '' : el.dataset.v; saveDraft(); render(); break;
     case 'pickEx': exFilter = 'all'; openExPicker(); break;
     case 'pickCardio': openCardioPicker(); break;
+    case 'newLog':
+      if (!draftHasContent()) { draft = newDraft(); saveDraft(); }
+      state.screen = 'log'; render(); break;
+    case 'addMeasure': case 'bodyLog': {
+      if (act === 'bodyLog' && !draftHasContent()) draft = newDraft();
+      state.screen = 'log';
+      const at = draft.entries.findIndex(e => e.type === 'measure');
+      if (at < 0) { draft.entries.push(MEAS_BLANK()); afterAdd(); }
+      else { saveDraft(); render(); document.getElementById(`entry-${at}`)?.scrollIntoView({behavior: 'smooth', block: 'center'}); }
+      break;
+    }
     case 'closeSheet': closeSheet(); break;
     case 'exFilter': exFilter = el.dataset.v; document.querySelectorAll('[data-act=exFilter]').forEach(c => c.classList.toggle('on', c.dataset.v === exFilter)); renderExList(); break;
     case 'pickExItem': addExercise(findEx(el.dataset.n)); break;
@@ -659,7 +809,8 @@ document.addEventListener('click', ev => {
     }
     case 'pickCardioItem': addCardio(el.dataset.v); break;
     case 'rmEntry': {
-      const e = draft.entries[i], filled = e.type === 'strength' ? e.sets.some(s => s.kg !== '' && s.kg != null || s.reps !== '' && s.reps != null) : (e.min || e.sec || e.dist);
+      const e = draft.entries[i], filled = e.type === 'strength' ? e.sets.some(s => s.kg !== '' && s.kg != null || s.reps !== '' && s.reps != null)
+        : e.type === 'measure' ? MEAS.some(([k]) => e[k] !== '' && e[k] != null) : (e.min || e.sec || e.dist || e.paceMin || e.speed);
       if (filled && !confirm('Remove this from the workout?')) break;
       draft.entries.splice(i, 1); saveDraft(); render(); break;
     }
@@ -694,7 +845,7 @@ document.addEventListener('input', ev => {
   else if (t.dataset.set) draft.entries[+t.dataset.i].sets[+t.dataset.j][t.dataset.set] = t.value;
   else if (t.dataset.c) {
     const i = +t.dataset.i, e = draft.entries[i]; e[t.dataset.c] = t.value;
-    const p = document.getElementById(`pace-${i}`); if (p) p.textContent = paceText(e.act, e.min, e.sec, e.dist);
+    const p = document.getElementById(`pace-${i}`); if (p) p.textContent = paceText(e);
   } else return;
   saveDraft();
 });
@@ -704,7 +855,7 @@ document.addEventListener('keydown', ev => {
 });
 
 /* ---------------- Boot ---------------- */
-if (draft) state.screen = 'log';
+if (draftHasContent()) state.screen = 'log';
 render();
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost'))
   navigator.serviceWorker.register('sw.js').catch(() => {});
