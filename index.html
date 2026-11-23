@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -381,7 +383,7 @@ function calendar(ws) {
     <div class="legend"><span><i style="background:var(--accent)"></i>Weights</span><span><i style="background:var(--cardio)"></i>Cardio</span></div>`;
 }
 function woCard(w) {
-  return `<button class="wo" data-act="open" data-id="${w.id}">
+  return `<button class="wo" data-act="open" data-id="${esc(w.id)}">
     <div class="wo-top"><span class="wo-title">${esc(workoutTitle(w))}</span><span class="wo-date">${esc(fmtDate(w.date, {weekday:'short', day:'numeric', month:'short'}))}</span></div>
     <div class="wo-sum">${esc(workoutSummary(w))}</div></button>`;
 }
@@ -393,8 +395,8 @@ function viewDetail() {
   const body = w.entries.map(e => {
     if (e.type === 'strength') {
       const vol = e.sets.reduce((s, x) => s + (x.kg || 0) * (e.time ? 0 : (x.reps || 0)), 0);
-      return `<div class="d-entry"><div><b>${esc(e.name)}</b> <span class="tag t-${e.eq || 'other'}">${esc(EQ[e.eq] || 'Custom')}</span></div>
-        <div class="d-sets">${e.sets.map((s, i) => `Set ${i+1}: ${s.kg != null ? fmtN(s.kg) + ' kg × ' : ''}${s.reps ?? '?'}${e.time ? ' s' : ' reps'}`).join('<br>')}</div>
+      return `<div class="d-entry"><div><b>${esc(e.name)}</b> <span class="tag t-${esc(e.eq || 'other')}">${esc(EQ[e.eq] || 'Custom')}</span></div>
+        <div class="d-sets">${e.sets.map((s, i) => `Set ${i+1}: ${s.kg != null ? fmtN(s.kg) + ' kg × ' : ''}${esc(s.reps ?? '?')}${e.time ? ' s' : ' reps'}`).join('<br>')}</div>
         ${vol ? `<div class="note" style="margin-top:4px">Volume ${fmtN(vol)} kg</div>` : ''}</div>`;
     }
     const a = CARDIO[e.act] || CARDIO.other;
@@ -408,8 +410,8 @@ function viewDetail() {
   <div class="sub">${esc(fmtDate(w.date, {weekday:'long', day:'numeric', month:'long', year:'numeric'}))}</div>
   <div class="card">${body}</div>
   ${w.notes ? `<h2>Notes</h2><div class="card" style="white-space:pre-wrap">${esc(w.notes)}</div>` : ''}
-  <div class="row" style="margin-top:16px"><button data-act="edit" data-id="${w.id}">✏️ Edit</button><button data-act="repeat" data-id="${w.id}">🔁 Do again today</button></div>
-  <button class="btn-danger" style="margin-top:10px" data-act="delete" data-id="${w.id}">Delete workout</button>`;
+  <div class="row" style="margin-top:16px"><button data-act="edit" data-id="${esc(w.id)}">✏️ Edit</button><button data-act="repeat" data-id="${esc(w.id)}">🔁 Do again today</button></div>
+  <button class="btn-danger" style="margin-top:10px" data-act="delete" data-id="${esc(w.id)}">Delete workout</button>`;
 }
 
 /* ---- Log / editor ---- */
@@ -451,7 +453,7 @@ function entryEditor(e, i) {
   const last = lastFor(e.name, draft.editing ? draft.id : null);
   const unit = e.time ? 'sec' : 'reps';
   return `<div class="card entry" id="entry-${i}">
-    <div class="entry-h"><div><div class="entry-name">${esc(e.name)}</div><span class="tag t-${e.eq || 'other'}">${esc(EQ[e.eq] || 'Custom')}</span></div>
+    <div class="entry-h"><div><div class="entry-name">${esc(e.name)}</div><span class="tag t-${esc(e.eq || 'other')}">${esc(EQ[e.eq] || 'Custom')}</span></div>
       <button class="icon-btn" data-act="rmEntry" data-i="${i}" aria-label="Remove">✕</button></div>
     ${last ? `<div class="last"><span>Last (${esc(fmtDate(last.date, {day:'numeric', month:'short'}))}): ${esc(summarizeSets(last.sets, e.time))}</span><button data-act="copyLast" data-i="${i}">Copy</button></div>` : '<div class="last">First time logging this one 💪</div>'}
     <div class="set-h"><span>Set</span><span style="text-align:center">kg</span><span style="text-align:center">${unit}</span><span></span></div>
@@ -459,7 +461,7 @@ function entryEditor(e, i) {
       const ph = last && last.sets[Math.min(j, last.sets.length - 1)];
       return `<div class="set"><span>${j+1}</span>
         <input type="text" inputmode="decimal" data-set="kg" data-i="${i}" data-j="${j}" value="${esc(s.kg ?? '')}" placeholder="${ph && ph.kg != null ? fmtN(ph.kg) : (e.eq === 'bodyweight' ? 'BW' : '')}">
-        <input type="text" inputmode="numeric" data-set="reps" data-i="${i}" data-j="${j}" value="${esc(s.reps ?? '')}" placeholder="${ph && ph.reps != null ? ph.reps : ''}">
+        <input type="text" inputmode="numeric" data-set="reps" data-i="${i}" data-j="${j}" value="${esc(s.reps ?? '')}" placeholder="${ph && ph.reps != null ? esc(ph.reps) : ''}">
         <button class="icon-btn" data-act="rmSet" data-i="${i}" data-j="${j}" aria-label="Remove set">−</button></div>`;
     }).join('')}
     <button class="add-set" data-act="addSet" data-i="${i}">+ Add set</button>
@@ -532,7 +534,7 @@ function openExPicker() {
 function renderExList() {
   const q = ($('#exSearch')?.value || '').trim().toLowerCase();
   const exs = allEx().filter(e => (exFilter === 'all' || e.eq === exFilter) && (!q || e.n.toLowerCase().includes(q)));
-  const item = e => `<button class="ex-item" data-act="pickExItem" data-n="${esc(e.n)}"><span>${esc(e.n)}</span><span class="tag t-${e.eq}">${EQ[e.eq]}</span></button>`;
+  const item = e => `<button class="ex-item" data-act="pickExItem" data-n="${esc(e.n)}"><span>${esc(e.n)}</span><span class="tag t-${esc(e.eq)}">${esc(EQ[e.eq] || 'Custom')}</span></button>`;
   let html = '';
   if (pendingCustom) {
     html = `<h2>What kind is “${esc(pendingCustom)}”?</h2><div class="chips">${Object.entries(EQ).map(([k, v]) => `<button class="chip" data-act="customEq" data-v="${k}">${v}</button>`).join('')}</div>`;
@@ -588,6 +590,27 @@ async function exportData() {
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
 }
+// Backup files come from outside the app, so rebuild every record from known-safe fields only.
+const str = (v, max) => (typeof v === 'string' ? v : '').slice(0, max);
+function cleanWorkout(w) {
+  if (!w || typeof w !== 'object' || !Array.isArray(w.entries)) return null;
+  const id = str(w.id, 40).replace(/[^a-z0-9]/gi, '');
+  const date = /^\d{4}-\d{2}-\d{2}$/.test(w.date) ? w.date : null;
+  if (!id || !date) return null;
+  const entries = w.entries.slice(0, 100).map(e => {
+    if (e && e.type === 'strength' && str(e.name, 80).trim()) return {
+      type: 'strength', name: str(e.name, 80).trim(), eq: EQ[e.eq] ? e.eq : null, time: e.time === true,
+      sets: (Array.isArray(e.sets) ? e.sets : []).slice(0, 50).map(s => ({kg: num(s && s.kg), reps: num(s && s.reps)}))};
+    if (e && e.type === 'cardio') return {
+      type: 'cardio', act: Object.hasOwn(CARDIO, e.act) ? e.act : 'other', min: num(e.min), sec: num(e.sec), dist: num(e.dist), effort: num(e.effort)};
+    return null;
+  }).filter(Boolean);
+  return {id, date, title: str(w.title, 80), notes: str(w.notes, 5000), entries, created: num(w.created) || Date.now(), updated: num(w.updated) || Date.now()};
+}
+function cleanCustom(c) {
+  const n = str(c && c.n, 80).trim();
+  return n ? {n, eq: EQ[c.eq] ? c.eq : 'machine', area: 'other', m: [], time: false} : null;
+}
 $('#importFile').addEventListener('change', async ev => {
   const f = ev.target.files[0]; ev.target.value = '';
   if (!f) return;
@@ -595,10 +618,11 @@ $('#importFile').addEventListener('change', async ev => {
     const data = JSON.parse(await f.text());
     if (!data || !Array.isArray(data.workouts)) throw new Error('bad');
     const have = new Set(db.workouts.map(w => w.id));
-    const fresh = data.workouts.filter(w => w && w.id && w.date && Array.isArray(w.entries) && !have.has(w.id));
-    if (!confirm(`Add ${fresh.length} workout${fresh.length === 1 ? '' : 's'} from this backup? (${data.workouts.length - fresh.length} already here will be skipped.)`)) return;
+    const fresh = data.workouts.map(cleanWorkout).filter(w => w && !have.has(w.id));
+    if (!confirm(`Add ${fresh.length} workout${fresh.length === 1 ? '' : 's'} from this backup? (${data.workouts.length - fresh.length} already here or unreadable will be skipped.)`)) return;
     db.workouts.push(...fresh);
-    for (const c of data.customExercises || []) if (c && c.n && !findEx(c.n)) db.customExercises.push(c);
+    for (const c of (Array.isArray(data.customExercises) ? data.customExercises : []).map(cleanCustom))
+      if (c && !findEx(c.n)) db.customExercises.push(c);
     saveDb(); render(); toast(`Imported ${fresh.length}`);
   } catch (e) { alert('That file doesn’t look like a GymPal backup.'); }
 });
