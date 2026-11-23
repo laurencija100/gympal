@@ -1,6 +1,6 @@
 // Offline support: serve from cache instantly, refresh the cache in the background.
 // Bump CACHE when shipping a new batch so old files get cleared.
-const CACHE = 'gympal-v5';
+const CACHE = 'gympal-v6';
 const ASSETS = ['./', './index.html', './manifest.json', './icon-180.png', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {

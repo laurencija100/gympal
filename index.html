@@ -332,11 +332,18 @@ function cardioLine(e) {
 }
 /* ---- Measurements ---- */
 const MEAS = [
-  ['weight', 'Weight', 'kg'], ['bodyFat', 'Body fat', '%'],
+  ['height', 'Height', 'cm'], ['weight', 'Weight', 'kg'], ['bodyFat', 'Body fat', '%'],
   ['shoulders', 'Shoulders', 'cm'], ['chest', 'Chest / bust', 'cm'], ['waist', 'Waist', 'cm'],
   ['hips', 'Hips / glutes', 'cm'], ['thigh', 'Thigh', 'cm'], ['arm', 'Upper arm', 'cm'], ['calf', 'Calf', 'cm'],
 ];
-const MEAS_BLANK = () => Object.fromEntries([['type', 'measure'], ...MEAS.map(([k]) => [k, ''])]);
+// New measurement form, prefilled with the last value of each measurement
+const measPrefill = excludeId => Object.fromEntries([['type', 'measure'],
+  ...MEAS.map(([k]) => { const l = measHistory(k, excludeId).at(-1); return [k, l ? fmtN(l.v) : '']; })]);
+const MEAS_TIP = 'Prefilled with your last values, so just change what’s different. Tip: measure at the same time of day, tape snug but not tight.';
+function measFields(vals, attrs) {
+  return `<div class="grid2">${MEAS.map(([k, n, u]) =>
+    `<label class="f">${n} (${u})<input type="text" inputmode="decimal" ${attrs(k)} value="${esc(vals[k] ?? '')}" autocomplete="off"></label>`).join('')}</div>`;
+}
 const isTraining = w => w.entries.some(e => e.type !== 'measure');
 function cleanMeasure(e) {
   const m = {type: 'measure'};
@@ -354,7 +361,7 @@ function measHistory(key, excludeId) {
 }
 const fmtDelta = d => Math.abs(d) < 0.05 ? '±0' : (d > 0 ? '+' : '−') + fmtN(Math.abs(Math.round(d * 10) / 10));
 function measSummary(e) {
-  return MEAS.filter(([k]) => e[k] != null && e[k] !== '').map(([k, n, u]) => `${n} ${fmtN(num(e[k]))} ${u}`).join(', ');
+  return MEAS.filter(([k]) => k !== 'height' && e[k] != null && e[k] !== '').map(([k, n, u]) => `${n} ${fmtN(num(e[k]))} ${u}`).join(', ');
 }
 
 function workoutTitle(w) {
@@ -378,8 +385,8 @@ let lastScreen = null;
 
 function render() {
   const s = state.screen;
-  app.innerHTML = s === 'history' ? viewHistory() : s === 'detail' ? viewDetail() : s === 'log' ? viewLog() : s === 'body' ? viewBody() : viewSettings();
-  const tab = s === 'detail' || s === 'log' ? 'history' : s;
+  app.innerHTML = s === 'history' ? viewHistory() : s === 'detail' ? viewDetail() : s === 'log' ? viewLog() : s === 'body' ? viewBody() : s === 'measure' ? viewMeasure() : viewSettings();
+  const tab = s === 'detail' || s === 'log' ? 'history' : s === 'measure' ? 'body' : s;
   document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
   if (s !== lastScreen) window.scrollTo(0, 0);
   lastScreen = s;
@@ -406,7 +413,7 @@ function viewHistory() {
   <h1>Workouts</h1>
   ${draftHasContent()
     ? `<button class="btn-primary" style="margin-top:10px" data-act="newLog">▶ Continue unsaved ${draft.editing ? 'edit' : 'workout'} (${draft.entries.length} item${draft.entries.length === 1 ? '' : 's'})</button>`
-    : `<button class="btn-primary" style="margin-top:10px" data-act="newLog">+ Log workout or measurements</button>`}
+    : `<button class="btn-primary" style="margin-top:10px" data-act="newLog">+ Log</button>`}
   <div class="stats">
     <div class="stat"><b>${weekCount}</b><span>This week</span></div>
     <div class="stat"><b>${monthWs.length}</b><span>This month</span></div>
@@ -467,7 +474,7 @@ function viewDetail() {
   <div class="sub">${esc(fmtDate(w.date, {weekday:'long', day:'numeric', month:'long', year:'numeric'}))}</div>
   <div class="card">${body}</div>
   ${w.notes ? `<h2>Notes</h2><div class="card" style="white-space:pre-wrap">${esc(w.notes)}</div>` : ''}
-  <div class="row" style="margin-top:16px"><button data-act="edit" data-id="${esc(w.id)}">✏️ Edit</button><button data-act="repeat" data-id="${esc(w.id)}">🔁 Do again today</button></div>
+  <div class="row" style="margin-top:16px"><button data-act="edit" data-id="${esc(w.id)}">✏️ Edit</button>${isTraining(w) ? `<button data-act="repeat" data-id="${esc(w.id)}">🔁 Do again today</button>` : ''}</div>
   <button class="btn-danger" style="margin-top:10px" data-act="delete" data-id="${esc(w.id)}">Delete workout</button>`;
 }
 
@@ -495,17 +502,11 @@ function viewLog() {
   <button class="btn-ghost btn-wide" style="margin-top:6px" data-act="discard">${d.editing ? 'Cancel editing' : 'Discard'}</button>`;
 }
 function entryEditor(e, i) {
-  if (e.type === 'measure') {
-    const ex = draft.editing ? draft.id : null;
-    return `<div class="card entry" id="entry-${i}">
+  if (e.type === 'measure') return `<div class="card entry" id="entry-${i}">
       <div class="entry-h"><div class="entry-name">📏 Measurements</div><button class="icon-btn" data-act="rmEntry" data-i="${i}" aria-label="Remove">✕</button></div>
-      <div class="note" style="margin:6px 0 10px">Fill in any you measured. Grey numbers are your last values. Tip: measure at the same time of day, tape snug but not tight.</div>
-      <div class="grid2">${MEAS.map(([k, n, u]) => {
-        const last = measHistory(k, ex).at(-1);
-        return `<label class="f">${n} (${u})<input type="text" inputmode="decimal" data-c="${k}" data-i="${i}" value="${esc(e[k] ?? '')}" placeholder="${last ? esc(fmtN(last.v)) : ''}"></label>`;
-      }).join('')}</div>
+      <div class="note" style="margin:6px 0 10px">${MEAS_TIP}</div>
+      ${measFields(e, k => `data-c="${k}" data-i="${i}"`)}
     </div>`;
-  }
   if (e.type === 'cardio') {
     const a = CARDIO[e.act] || CARDIO.other;
     return `<div class="card entry" id="entry-${i}">
@@ -680,9 +681,9 @@ function viewBody() {
   const stat = k => {
     const [, name, unit] = MEAS.find(m => m[0] === k), a = h[k], l = a.at(-1);
     return `<div class="stat"><b>${l ? esc(fmtN(l.v)) + ` <small style="font-size:13px;color:var(--muted)">${unit}</small>` : '—'}</b>
-      <span>${name}${a.length > 1 ? ` · ${esc(fmtDelta(l.v - a.at(-2).v))} since last` : ''}</span></div>`;
+      <span>${name}${k !== 'height' && a.length > 1 ? ` · ${esc(fmtDelta(l.v - a.at(-2).v))}` : ''}</span></div>`;
   };
-  const rows = MEAS.filter(([k]) => h[k].length).map(([k, n, u]) => {
+  const rows = MEAS.filter(([k]) => k !== 'height' && h[k].length).map(([k, n, u]) => {
     const a = h[k], l = a.at(-1);
     return `<tr><td>${n}</td><td><b>${esc(fmtN(l.v))}</b> ${u}</td>
       <td class="d">${a.length > 1 ? esc(fmtDelta(l.v - a.at(-2).v)) : '–'}</td>
@@ -692,12 +693,41 @@ function viewBody() {
   <h1>Body</h1>
   <div class="sub">${lastDate ? `Last measured ${esc(fmtDate(lastDate, {weekday:'short', day:'numeric', month:'short', year:'numeric'}))}` : 'No measurements yet'}</div>
   <button class="btn-primary" style="margin-top:12px" data-act="bodyLog">📏 Log measurements</button>
-  <div class="stats" style="grid-template-columns:1fr 1fr">${stat('weight')}${stat('bodyFat')}</div>
+  <div class="stats">${stat('height')}${stat('weight')}${stat('bodyFat')}</div>
   <div class="card">${bodyFigure(h)}</div>
   ${any ? `<h2>Changes</h2><div class="card"><table class="mtable">
       <tr><th>Measurement</th><th>Latest</th><th>Since last</th><th>Since first</th></tr>${rows}</table></div>`
     : `<div class="card note">Log your weight and measurements to see them on the body above and track changes over time. Measuring every 2–4 weeks is plenty; tape measurements change slowly.</div>`}
   <p class="note" style="text-align:center">Coming next: tap a body area for exercise ideas.</p>`;
+}
+
+// Measurements-only screen (opened from the Body tab, or when editing a measurements-only day)
+let mdraft = null;
+function startMeasure(w) {
+  if (w) mdraft = {id: w.id, editing: true, date: w.date, ...Object.fromEntries(MEAS.map(([k]) => [k, (w.entries.find(e => e.type === 'measure') || {})[k] ?? '']))};
+  else mdraft = {id: uid(), editing: false, date: today(), ...measPrefill(null)};
+  state.screen = 'measure'; render();
+}
+function viewMeasure() {
+  if (!mdraft) { state.screen = 'body'; return viewBody(); }
+  const m = mdraft;
+  return `
+  <div class="top"><button class="back" data-act="tab" data-tab="body">‹ Body</button></div>
+  <h1>${m.editing ? 'Edit measurements' : 'Log measurements'}</h1>
+  <div class="card"><label class="f" style="margin:0">Date<input type="date" data-mf="date" value="${esc(m.date)}" max="${today()}"></label></div>
+  <div class="card"><div class="note" style="margin:0 0 10px">${MEAS_TIP}</div>${measFields(m, k => `data-mf="${k}"`)}</div>
+  <button class="btn-primary" data-act="saveMeasure">Save measurements</button>`;
+}
+function saveMeasure() {
+  const m = mdraft;
+  if (!m.date) return toast('Pick a date');
+  const entry = cleanMeasure(m);
+  if (!MEAS.some(([k]) => entry[k] != null)) return toast('Fill in at least one measurement');
+  const old = db.workouts.find(w => w.id === m.id);
+  const w = old ? {...old, date: m.date, entries: [...old.entries.filter(e => e.type !== 'measure'), entry], updated: Date.now()}
+    : {id: m.id, date: m.date, title: '', notes: '', entries: [entry], created: Date.now(), updated: Date.now()};
+  db.workouts = db.workouts.filter(x => x.id !== m.id).concat(w);
+  saveDb(); mdraft = null; state.screen = 'body'; render(); toast('Saved ✓');
 }
 
 /* ---- Settings ---- */
@@ -780,7 +810,11 @@ document.addEventListener('click', ev => {
     case 'newOn':
       if (draftHasContent() && !confirm('You have an unsaved workout in progress. Replace it?')) break;
       draft = newDraft(el.dataset.date); saveDraft(); state.screen = 'log'; render(); break;
-    case 'edit': startDraftFrom(db.workouts.find(w => w.id === el.dataset.id), false); break;
+    case 'edit': {
+      const w = db.workouts.find(x => x.id === el.dataset.id);
+      if (!isTraining(w)) startMeasure(w); else startDraftFrom(w, false);
+      break;
+    }
     case 'repeat': startDraftFrom(db.workouts.find(w => w.id === el.dataset.id), true); break;
     case 'delete':
       if (confirm('Delete this workout? This can’t be undone.')) { db.workouts = db.workouts.filter(w => w.id !== el.dataset.id); saveDb(); state.screen = 'history'; render(); toast('Deleted'); }
@@ -791,11 +825,11 @@ document.addEventListener('click', ev => {
     case 'newLog':
       if (!draftHasContent()) { draft = newDraft(); saveDraft(); }
       state.screen = 'log'; render(); break;
-    case 'addMeasure': case 'bodyLog': {
-      if (act === 'bodyLog' && !draftHasContent()) draft = newDraft();
-      state.screen = 'log';
+    case 'bodyLog': startMeasure(null); break;
+    case 'saveMeasure': saveMeasure(); break;
+    case 'addMeasure': {
       const at = draft.entries.findIndex(e => e.type === 'measure');
-      if (at < 0) { draft.entries.push(MEAS_BLANK()); afterAdd(); }
+      if (at < 0) { draft.entries.push(measPrefill(draft.editing ? draft.id : null)); afterAdd(); }
       else { saveDraft(); render(); document.getElementById(`entry-${at}`)?.scrollIntoView({behavior: 'smooth', block: 'center'}); }
       break;
     }
@@ -840,6 +874,7 @@ document.addEventListener('click', ev => {
 document.addEventListener('input', ev => {
   const t = ev.target;
   if (t.id === 'exSearch') { pendingCustom = null; renderExList(); return; }
+  if (t.dataset.mf) { if (mdraft) mdraft[t.dataset.mf] = t.value; return; }
   if (!draft) return;
   if (t.dataset.f) { draft[t.dataset.f] = t.value; if (t.dataset.f === 'title') document.querySelectorAll('[data-act=quickTitle]').forEach(c => c.classList.toggle('on', c.dataset.v === t.value)); }
   else if (t.dataset.set) draft.entries[+t.dataset.i].sets[+t.dataset.j][t.dataset.set] = t.value;
