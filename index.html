@@ -68,8 +68,10 @@ label.f>input,label.f>select,label.f>textarea{margin-top:4px}
 .dot.s{background:var(--accent)}.dot.c{background:var(--cardio)}.dot.m{background:var(--measure)}
 /* body tab */
 .figure{width:100%;height:auto;display:block}
-.figure .limb{stroke:#353b47;stroke-linecap:round;fill:none}
-.figure .torso,.figure .head{fill:#353b47}
+.figure .skin{fill:url(#skin)}
+.figure .hair{fill:#2b303c}
+.figure .wear{fill:#7a3d52}
+.figure .strap{stroke:#7a3d52;stroke-width:3.5;stroke-linecap:round;fill:none}
 .figure .lead{stroke:var(--muted);stroke-width:1;opacity:.6}
 .figure .pt{fill:var(--accent)}
 .figure .ln{fill:var(--muted);font-size:11px}
@@ -651,9 +653,68 @@ function openCardioPicker() {
 /* ---- Body ---- */
 // Where each measurement's label sits (side, label y) and the point on the figure it points to
 const BODY_LABELS = {
-  chest: ['L', 118, 157, 120], waist: ['L', 178, 154, 172], hips: ['L', 238, 141, 222], thigh: ['L', 300, 158, 292],
-  shoulders: ['R', 84, 219, 86], arm: ['R', 158, 236, 150], calf: ['R', 372, 205, 372],
+  chest: ['L', 120, 160, 122], waist: ['L', 172, 158, 166], hips: ['L', 232, 142, 222], thigh: ['L', 296, 157, 282],
+  shoulders: ['R', 82, 222, 86], arm: ['R', 150, 229, 145], calf: ['R', 362, 203, 360],
 };
+// Silhouette: the left half is drawn as curves; the right half is its mirror image (centre line x = 180).
+// Each segment is a cubic curve: [control1 x, y, control2 x, y, end x, y]
+const BODY_START = [172, 60], BODY_LEFT = [
+  [172, 68, 171, 74, 165, 78],   // neck → base of neck
+  [156, 82, 142, 82, 136, 88],   // shoulder slope
+  [131, 92, 132, 100, 134, 106], // shoulder cap
+  [138, 110, 146, 112, 147, 118],// under the arm
+  [148, 135, 155, 150, 154, 165],// ribs → waist
+  [152, 183, 135, 198, 134, 222],// waist → hip
+  [133, 250, 145, 290, 149, 318],// outer thigh → knee
+  [152, 330, 144, 345, 147, 362],// knee → calf
+  [150, 380, 158, 395, 160, 404],// calf → ankle
+  [160, 410, 152, 415, 157, 419],// ankle → toe
+  [163, 421, 172, 421, 176, 418],// sole
+  [177, 412, 175, 407, 174, 402],// inner ankle
+  [175, 370, 170, 345, 172, 320],// inner calf → knee
+  [174, 292, 176, 262, 179, 247],// inner thigh
+  [179.5, 246, 180, 246, 180, 246], // centre
+];
+const ARM_START = [138, 86], ARM_LEFT = [
+  [128, 100, 124, 140, 124, 168], [123, 190, 121, 215, 123, 236],
+  [121, 250, 125, 263, 131, 263], [137, 263, 137, 249, 136, 240],
+  [136, 216, 139, 192, 138, 172], [138, 150, 142, 126, 146, 112], [144, 100, 141, 90, 138, 86],
+];
+const mx = x => 360 - x;
+function bodyOutline() {
+  const pts = [BODY_START, ...BODY_LEFT.map(s => [s[4], s[5]])];
+  let d = `M${BODY_START.join(' ')}` + BODY_LEFT.map(s => ` C${s.join(' ')}`).join('');
+  for (let i = BODY_LEFT.length - 1; i >= 0; i--) { // walk back up the right side
+    const [c1x, c1y, c2x, c2y] = BODY_LEFT[i], [px, py] = pts[i];
+    d += ` C${mx(c2x)} ${c2y} ${mx(c1x)} ${c1y} ${mx(px)} ${py}`;
+  }
+  return d + ' Z';
+}
+function armPath(flip) {
+  const f = flip ? mx : x => x;
+  return `M${f(ARM_START[0])} ${ARM_START[1]}` + ARM_LEFT.map(([a, b, c, d, e, g]) => ` C${f(a)} ${b} ${f(c)} ${d} ${f(e)} ${g}`).join('') + ' Z';
+}
+let FIGURE_SVG = null;
+function figureShapes() {
+  if (FIGURE_SVG) return FIGURE_SVG;
+  const body = bodyOutline();
+  return FIGURE_SVG = `
+    <defs>
+      <linearGradient id="skin" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#58627a"/><stop offset=".5" stop-color="#4c5569"/><stop offset="1" stop-color="#3e4556"/></linearGradient>
+      <clipPath id="bodyClip"><path d="${body}"/></clipPath>
+    </defs>
+    <path class="hair" d="M159 42 C156 12 204 12 201 42 C203 60 204 72 212 84 C196 92 164 92 148 84 C156 72 157 60 159 42 Z"/>
+    <path class="skin" d="${body}"/>
+    <g clip-path="url(#bodyClip)">
+      <path class="wear" d="M120 103 C148 100 160 113 180 113 C200 113 212 100 240 103 V136 C210 142 150 142 120 136 Z"/>
+      <path class="wear" d="M120 197 C150 203 210 203 240 197 V234 C214 238 192 244 182 254 L178 254 C168 244 146 238 120 234 Z"/>
+      <path class="strap" d="M166 79 L158 105 M194 79 L202 105"/>
+    </g>
+    <path class="skin" d="${armPath(false)}"/>
+    <path class="skin" d="${armPath(true)}"/>
+    <ellipse class="skin" cx="180" cy="37" rx="18.5" ry="23"/>
+    <path class="hair" d="M161 36 C160 18 172 12 182 13 C194 14 201 22 199 36 C192 28 178 24 166 30 Z"/>`;
+}
 function bodyFigure(h) {
   let labels = '';
   for (const [k, [side, ly, px, py]] of Object.entries(BODY_LABELS)) {
@@ -665,13 +726,7 @@ function bodyFigure(h) {
       <text x="${tx}" y="${ly + 13}" text-anchor="${anchor}" class="lv">${last ? esc(fmtN(last.v)) + ` <tspan class="ld">${unit}${delta ? ' ' + esc(delta) : ''}</tspan>` : '<tspan class="ld">—</tspan>'}</text>`;
   }
   return `<svg class="figure" viewBox="0 0 360 430" role="img" aria-label="Body outline with your latest measurements">
-    <circle class="head" cx="180" cy="40" r="20"/>
-    <path class="limb" stroke-width="14" d="M180 56 V76"/>
-    <path class="torso" d="M144 80 Q180 72 216 80 L224 90 Q222 130 208 170 Q226 196 224 236 L136 236 Q134 196 152 170 Q138 130 136 90 Z"/>
-    <path class="limb" stroke-width="16" d="M136 92 L124 168 L118 246"/>
-    <path class="limb" stroke-width="16" d="M224 92 L236 168 L242 246"/>
-    <path class="limb" stroke-width="30" d="M161 230 L157 322 L155 410"/>
-    <path class="limb" stroke-width="30" d="M199 230 L203 322 L205 410"/>
+    ${figureShapes()}
     ${labels}</svg>`;
 }
 function viewBody() {
