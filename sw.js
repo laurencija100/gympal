@@ -1,10 +1,10 @@
 // Offline support: serve from cache instantly, refresh the cache in the background.
 // Bump CACHE when shipping a new batch so old files get cleared.
-const CACHE = 'gympal-v4';
+const CACHE = 'gympal-v5';
 const ASSETS = ['./', './index.html', './manifest.json', './icon-180.png', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS.map(u => new Request(u, {cache: 'no-cache'})))));
   self.skipWaiting();
 });
 
@@ -17,7 +17,8 @@ self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET' || new URL(e.request.url).origin !== location.origin) return;
   e.respondWith(caches.open(CACHE).then(async cache => {
     const cached = await cache.match(e.request, { ignoreSearch: true });
-    const fresh = fetch(e.request).then(res => {
+    // 'no-cache' = always ask GitHub whether the file changed, instead of trusting a copy up to 10 min old
+    const fresh = fetch(new Request(e.request.url, {cache: 'no-cache', credentials: 'same-origin'})).then(res => {
       if (res.ok) cache.put(e.request, res.clone());
       return res;
     }).catch(() => cached);
